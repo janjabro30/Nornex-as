@@ -39,10 +39,9 @@ interface ServiceIconCardProps {
   Icon: React.ComponentType<{ className?: string }>;
   gradient: string;
   label: string;
-  index: number;
 }
 
-function ServiceIconCard({ Icon, gradient, label, index }: ServiceIconCardProps) {
+function ServiceIconCard({ Icon, gradient, label }: ServiceIconCardProps) {
   return (
     <div
       className={`
@@ -61,9 +60,6 @@ function ServiceIconCard({ Icon, gradient, label, index }: ServiceIconCardProps)
         hover:shadow-2xl hover:shadow-current/30
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
       `}
-      style={{
-        animationDelay: `${index * 0.1}s`,
-      }}
       tabIndex={0}
       role="button"
       aria-label={label}
@@ -135,13 +131,12 @@ export function HeroSection() {
           {/* Right side - Service Icons Grid */}
           <div className="order-1 lg:order-2">
             <div className="grid grid-cols-4 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 max-w-md mx-auto lg:max-w-none">
-              {serviceIcons.map((service, index) => (
+              {serviceIcons.map((service) => (
                 <ServiceIconCard
                   key={service.label}
                   Icon={service.Icon}
                   gradient={service.gradient}
                   label={service.label}
-                  index={index}
                 />
               ))}
             </div>
