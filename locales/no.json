@@ -1,0 +1,16 @@
+{
+  "common": {
+    "company_name": "NORNEX",
+    "company_address": "Brynsveien 18, 0667 Oslo",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "edit": "Rediger"
+  },
+  "navigation": {
+    "services": "Tjenester",
+    "repair": "Reparasjon",
+    "webshop": "Nettbutikk",
+    "sell": "Selg til oss"
+  }
+}

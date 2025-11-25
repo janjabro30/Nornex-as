@@ -1,0 +1,48 @@
+/* Nornex AS - Design System
+ * Professional Norwegian IT services platform
+ * Phase 1: Foundation & Core Infrastructure
+ */
+
+:root {
+  /* Primary */
+  --color-primary: #1E40AF;
+  --color-primary-light: #3B82F6;
+  --color-primary-dark: #1E3A8A;
+  
+  /* Gradients */
+  --gradient-blue: linear-gradient(135deg, #3B82F6, #1E40AF);
+  --gradient-pink: linear-gradient(135deg, #EC4899, #9333EA);
+  --gradient-cyan: linear-gradient(135deg, #06B6D4, #0891B2);
+  --gradient-purple: linear-gradient(135deg, #8B5CF6, #6D28D9);
+  
+  /* Semantic */
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  
+  /* Neutral with WCAG AAA contrast */
+  --color-neutral-50: #F9FAFB;
+  --color-neutral-900: #111827;
+  
+  /* Spacing (8px base) */
+  --spacing-2: 0.5rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  
+  /* Typography */
+  --font-primary: 'Inter', sans-serif;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  
+  /* Shadows */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Transitions */
+  --transition-base: 200ms ease-in-out;
+  
+  /* Radius */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}

@@ -379,3 +379,51 @@ model Certification {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// ============== PHASE 1: FOUNDATION ==============
+
+model SocialMedia {
+  id           Int      @id @default(autoincrement())
+  platform     String   @db.VarChar(50)
+  url          String   @db.VarChar(255)
+  displayOrder Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("social_media")
+}
+
+model Partner {
+  id                 Int      @id @default(autoincrement())
+  name               String   @db.VarChar(100)
+  logoUrl            String?  @db.VarChar(255)
+  testimonialText    String?  @db.Text
+  testimonialAuthor  String?  @db.VarChar(100)
+  displayOrder       Int
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  @@map("partners")
+}
+
+model ApiIntegration {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  type      String   @db.VarChar(50)
+  status    String   @default("inactive") @db.VarChar(20) // 'active' or 'inactive'
+  config    Json?
+  createdAt DateTime @default(now())
+
+  @@map("api_integrations")
+}
+
+model SeoMeta {
+  id          Int      @id @default(autoincrement())
+  pagePath    String   @unique @db.VarChar(255)
+  title       String?  @db.VarChar(60)
+  description String?  @db.VarChar(160)
+  keywords    String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@map("seo_meta")
+}
