@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n/LanguageContext';
 
-export default function KontaktPage() {
+function ContactFormInner() {
   const { t } = useLanguage();
   const searchParams = useSearchParams();
   const preselectedPackage = searchParams.get('package');
@@ -267,5 +267,13 @@ export default function KontaktPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function KontaktPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center">Laster...</div>}>
+      <ContactFormInner />
+    </Suspense>
   );
 }

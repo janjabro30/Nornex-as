@@ -92,9 +92,17 @@ export class ServicesService {
 
   async getCategories() {
     return [
-      { key: ServiceCategory.MANAGED_IT, labelNo: 'Managed IT & Reparasjon', labelEn: 'Managed IT & Repair' },
+      {
+        key: ServiceCategory.MANAGED_IT,
+        labelNo: 'Managed IT & Reparasjon',
+        labelEn: 'Managed IT & Repair',
+      },
       { key: ServiceCategory.PRODUCT_STUDIO, labelNo: 'Produktstudio', labelEn: 'Product Studio' },
-      { key: ServiceCategory.SECURITY, labelNo: 'Sikkerhet & Compliance', labelEn: 'Security & Compliance' },
+      {
+        key: ServiceCategory.SECURITY,
+        labelNo: 'Sikkerhet & Compliance',
+        labelEn: 'Security & Compliance',
+      },
     ];
   }
 }

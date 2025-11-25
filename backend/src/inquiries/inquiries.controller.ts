@@ -11,7 +11,12 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InquiriesService } from './inquiries.service';
-import { CreateInquiryDto, UpdateInquiryDto, UpdateStatusDto, AssignInquiryDto } from './dto/inquiry.dto';
+import {
+  CreateInquiryDto,
+  UpdateInquiryDto,
+  UpdateStatusDto,
+  AssignInquiryDto,
+} from './dto/inquiry.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';

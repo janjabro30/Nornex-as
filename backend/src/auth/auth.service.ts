@@ -14,7 +14,8 @@ export class AuthService {
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
-      const { password: _, ...result } = user;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _pwd, ...result } = user;
       return result;
     }
     return null;
@@ -46,7 +47,8 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    const { password: _, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...result } = user;
     const payload = { email: result.email, sub: result.id, role: result.role };
 
     return {
@@ -60,7 +62,8 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    const { password: _, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...result } = user;
     return result;
   }
 }

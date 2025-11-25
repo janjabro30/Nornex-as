@@ -25,11 +25,13 @@ export class BlogController {
   @Get('posts/recent')
   @ApiOperation({ summary: 'Get recent blog posts' })
   @ApiQuery({ name: 'lang', required: false, enum: ['no', 'en'], description: 'Language code' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of posts to return' })
-  getRecentPosts(
-    @Query('lang') lang: string = 'no',
-    @Query('limit') limit: number = 3,
-  ) {
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of posts to return',
+  })
+  getRecentPosts(@Query('lang') lang: string = 'no', @Query('limit') limit: number = 3) {
     return this.blogService.getRecentPosts(lang, limit);
   }
 

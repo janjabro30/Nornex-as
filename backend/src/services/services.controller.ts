@@ -11,11 +11,13 @@ export class ServicesController {
   @Get()
   @ApiOperation({ summary: 'Get all IT services' })
   @ApiQuery({ name: 'lang', required: false, enum: ['no', 'en'], description: 'Language code' })
-  @ApiQuery({ name: 'category', required: false, enum: ServiceCategory, description: 'Filter by category' })
-  findAll(
-    @Query('lang') lang: string = 'no',
-    @Query('category') category?: ServiceCategory,
-  ) {
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    enum: ServiceCategory,
+    description: 'Filter by category',
+  })
+  findAll(@Query('lang') lang: string = 'no', @Query('category') category?: ServiceCategory) {
     return this.servicesService.findAll(lang, category);
   }
 
@@ -29,10 +31,7 @@ export class ServicesController {
   @ApiOperation({ summary: 'Get services by category' })
   @ApiParam({ name: 'category', enum: ServiceCategory })
   @ApiQuery({ name: 'lang', required: false, enum: ['no', 'en'], description: 'Language code' })
-  findByCategory(
-    @Param('category') category: ServiceCategory,
-    @Query('lang') lang: string = 'no',
-  ) {
+  findByCategory(@Param('category') category: ServiceCategory, @Query('lang') lang: string = 'no') {
     return this.servicesService.findByCategory(category, lang);
   }
 

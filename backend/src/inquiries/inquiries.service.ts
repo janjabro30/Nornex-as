@@ -13,11 +13,7 @@ export class InquiriesService {
     });
   }
 
-  async findAll(
-    page: number = 1,
-    limit: number = 10,
-    status?: InquiryStatus,
-  ) {
+  async findAll(page: number = 1, limit: number = 10, status?: InquiryStatus) {
     const skip = (page - 1) * limit;
     const where: any = {};
 
