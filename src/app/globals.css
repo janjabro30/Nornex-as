@@ -73,3 +73,36 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Hero Section Service Icon Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.service-icon-card {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Stagger the floating animation for each card */
+.service-icon-card:nth-child(1) { animation-delay: 0s; }
+.service-icon-card:nth-child(2) { animation-delay: 0.2s; }
+.service-icon-card:nth-child(3) { animation-delay: 0.4s; }
+.service-icon-card:nth-child(4) { animation-delay: 0.6s; }
+.service-icon-card:nth-child(5) { animation-delay: 0.8s; }
+.service-icon-card:nth-child(6) { animation-delay: 1.0s; }
+.service-icon-card:nth-child(7) { animation-delay: 1.2s; }
+.service-icon-card:nth-child(8) { animation-delay: 1.4s; }
+.service-icon-card:nth-child(9) { animation-delay: 1.6s; }
+.service-icon-card:nth-child(10) { animation-delay: 1.8s; }
+.service-icon-card:nth-child(11) { animation-delay: 2.0s; }
+.service-icon-card:nth-child(12) { animation-delay: 2.2s; }
+
+/* Pause floating animation on hover for smooth transition */
+.service-icon-card:hover {
+  animation-play-state: paused;
+}

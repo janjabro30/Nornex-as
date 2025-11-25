@@ -18,6 +18,7 @@ import { ProductCard } from "@/components/shop";
 import { useAppStore } from "@/store";
 import { getTranslation } from "@/lib/translations";
 import { mockProducts, totalEnvironmentalImpact } from "@/lib/mock-data";
+import { HeroSection } from "@/components/HeroSection";
 
 export default function HomePage() {
   const { language } = useAppStore();
@@ -50,43 +51,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 text-white">
-        <div className="absolute inset-0 bg-black/10" />
-        <div className="container mx-auto px-4 py-20 md:py-32 relative z-10">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
-              {t.home.hero.title}
-            </h1>
-            <p className="text-xl md:text-2xl text-green-100 mb-8">
-              {t.home.hero.subtitle}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/nettbutikk">
-                <Button
-                  size="lg"
-                  className="bg-white text-green-700 hover:bg-green-50"
-                >
-                  {t.home.hero.cta}
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="/selg-til-oss">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10"
-                >
-                  <Recycle className="mr-2 w-5 h-5" />
-                  {t.home.hero.sellCta}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Decorative elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
-      </section>
+      {/* Dynamic Hero Section with Interactive Service Icons */}
+      <HeroSection />
 
       {/* Impact Stats */}
       <section className="py-12 bg-gray-50 -mt-8 relative z-20">
