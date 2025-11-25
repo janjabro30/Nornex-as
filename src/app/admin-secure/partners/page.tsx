@@ -26,6 +26,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Partner } from "@/types";
 import { mockPartners } from "@/lib/mock-data";
 
+const MAX_TESTIMONIAL_LENGTH = 500;
+
 interface PartnerFormData {
   companyName: string;
   websiteUrl: string;
@@ -58,6 +60,7 @@ export default function PartnerManagement() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [deletingPartner, setDeletingPartner] = useState<Partner | null>(null);
   const [formData, setFormData] = useState<PartnerFormData>(initialFormData);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -69,11 +72,13 @@ export default function PartnerManagement() {
   const handleOpenAddModal = () => {
     setEditingPartner(null);
     setFormData(initialFormData);
+    setValidationError(null);
     setShowModal(true);
   };
 
   const handleOpenEditModal = (partner: Partner) => {
     setEditingPartner(partner);
+    setValidationError(null);
     setFormData({
       companyName: partner.companyName,
       websiteUrl: partner.websiteUrl || "",
@@ -93,13 +98,15 @@ export default function PartnerManagement() {
     setShowModal(false);
     setEditingPartner(null);
     setFormData(initialFormData);
+    setValidationError(null);
   };
 
   const handleSavePartner = () => {
     if (!formData.companyName || !formData.logoUrl) {
-      alert("Firmanavn og logo er påkrevd");
+      setValidationError("Firmanavn og logo er påkrevd");
       return;
     }
+    setValidationError(null);
 
     if (editingPartner) {
       setPartners(
@@ -115,7 +122,7 @@ export default function PartnerManagement() {
       );
     } else {
       const newPartner: Partner = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         ...formData,
         displayOrder: partners.length + 1,
         createdAt: new Date(),
@@ -398,6 +405,12 @@ export default function PartnerManagement() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Validation Error */}
+              {validationError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {validationError}
+                </div>
+              )}
               {/* Company Information */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-gray-900">
@@ -474,14 +487,14 @@ export default function PartnerManagement() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        testimonialText: e.target.value.slice(0, 500),
+                        testimonialText: e.target.value.slice(0, MAX_TESTIMONIAL_LENGTH),
                       })
                     }
                     placeholder="Skriv uttalelsen her..."
                     rows={4}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    {formData.testimonialText.length}/500 tegn
+                    {formData.testimonialText.length}/{MAX_TESTIMONIAL_LENGTH} tegn
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">

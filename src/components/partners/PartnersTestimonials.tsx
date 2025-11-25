@@ -6,6 +6,8 @@ import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import type { Partner } from "@/types";
 import { cn } from "@/lib/utils";
 
+const TRANSITION_DURATION = 300;
+
 interface PartnersTestimonialsProps {
   partners: Partner[];
   autoAdvanceInterval?: number;
@@ -35,7 +37,7 @@ export function PartnersTestimonials({
         prev === testimonialsPartners.length - 1 ? 0 : prev + 1
       );
       setIsTransitioning(false);
-    }, 300);
+    }, TRANSITION_DURATION);
   }, [testimonialsPartners.length]);
 
   const goToPrevious = useCallback(() => {
@@ -46,7 +48,7 @@ export function PartnersTestimonials({
         prev === 0 ? testimonialsPartners.length - 1 : prev - 1
       );
       setIsTransitioning(false);
-    }, 300);
+    }, TRANSITION_DURATION);
   }, [testimonialsPartners.length]);
 
   const goToSlide = useCallback((index: number) => {
@@ -54,7 +56,7 @@ export function PartnersTestimonials({
     setTimeout(() => {
       setCurrentIndex(index);
       setIsTransitioning(false);
-    }, 300);
+    }, TRANSITION_DURATION);
   }, []);
 
   useEffect(() => {
