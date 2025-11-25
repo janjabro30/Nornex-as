@@ -12,12 +12,17 @@ export function CustomerTypeModal() {
   useEffect(() => {
     // Check if user has already selected customer type
     const storedType = localStorage.getItem("nornex-customer-type");
-    if (!storedType) {
+    if (storedType) {
+      // Sync localStorage value with Zustand store
+      if (storedType === "private" || storedType === "business") {
+        setCustomerType(storedType);
+      }
+    } else {
       // Small delay to prevent flash on page load
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [setCustomerType]);
 
   const selectType = (type: "private" | "business") => {
     localStorage.setItem("nornex-customer-type", type);

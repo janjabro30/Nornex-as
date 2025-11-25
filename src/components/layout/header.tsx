@@ -59,7 +59,8 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target;
+      if (dropdownRef.current && target instanceof Node && !dropdownRef.current.contains(target)) {
         setOpenDropdown(null);
       }
     };
