@@ -118,7 +118,9 @@ export type UserRole =
   | "MANAGER"
   | "ACCOUNTANT"
   | "ADMIN"
-  | "SUPER_ADMIN";
+  | "SUPER_ADMIN"
+  | "VIEW_ONLY"
+  | "SUPPORT";
 
 export interface User {
   id: string;
