@@ -8,6 +8,7 @@ import {
   Instagram,
   Linkedin,
   Youtube,
+  Twitter,
   Calendar,
   Plus,
   BarChart3,
@@ -106,7 +107,7 @@ export default function SocialMediaPage() {
     FACEBOOK: Facebook,
     INSTAGRAM: Instagram,
     LINKEDIN: Linkedin,
-    TWITTER: Facebook, // Using Facebook as placeholder
+    TWITTER: Twitter,
     YOUTUBE: Youtube,
   };
 

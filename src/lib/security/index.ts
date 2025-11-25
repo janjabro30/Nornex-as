@@ -214,11 +214,24 @@ export function hasMinimumRole(userRole: UserRole, requiredRole: UserRole): bool
 
 // MFA helpers
 export function generateMFASecret(): string {
-  // In production, use a proper TOTP library like otpauth
+  // Use crypto for cryptographically secure random number generation
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const array = new Uint8Array(32);
+  
+  // Use crypto.getRandomValues for secure random generation
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(array);
+  } else {
+    // Fallback for environments without Web Crypto API
+    // This should only be used in development/testing
+    for (let i = 0; i < 32; i++) {
+      array[i] = Math.floor(Math.random() * 256);
+    }
+  }
+  
   let secret = "";
   for (let i = 0; i < 32; i++) {
-    secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    secret += chars.charAt(array[i] % chars.length);
   }
   return secret;
 }
