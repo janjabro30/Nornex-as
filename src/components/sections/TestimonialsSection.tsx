@@ -143,7 +143,7 @@ export function TestimonialsSection() {
 
                   {/* Content */}
                   <p className="text-gray-600 mb-6 leading-relaxed">
-                    &quot;{language === "no" ? testimonial.contentNo : testimonial.contentEn}&quot;
+                    &ldquo;{language === "no" ? testimonial.contentNo : testimonial.contentEn}&rdquo;
                   </p>
 
                   {/* Author */}
