@@ -1,0 +1,271 @@
+// This is your Prisma schema file
+// Nornex AS IT Services Platform Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  USER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  role      UserRole @default(USER)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  inquiries    Inquiry[]
+  blogPosts    BlogPost[]
+  testimonials Testimonial[]
+
+  @@map("users")
+}
+
+// ============================================
+// SERVICES
+// ============================================
+
+enum ServiceCategory {
+  MANAGED_IT
+  PRODUCT_STUDIO
+  SECURITY
+}
+
+model Service {
+  id          String          @id @default(uuid())
+  slug        String          @unique
+  category    ServiceCategory
+  icon        String?
+  imageUrl    String?         @map("image_url")
+  isActive    Boolean         @default(true) @map("is_active")
+  sortOrder   Int             @default(0) @map("sort_order")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  translations ServiceTranslation[]
+
+  @@map("services")
+}
+
+model ServiceTranslation {
+  id          String @id @default(uuid())
+  serviceId   String @map("service_id")
+  language    String @default("no")
+  title       String
+  description String
+  features    Json?  // Array of feature strings
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, language])
+  @@map("service_translations")
+}
+
+// ============================================
+// PRICING PACKAGES
+// ============================================
+
+model Package {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  priceMonthly Int     @map("price_monthly")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  translations PackageTranslation[]
+
+  @@map("packages")
+}
+
+model PackageTranslation {
+  id          String  @id @default(uuid())
+  packageId   String  @map("package_id")
+  language    String  @default("no")
+  name        String
+  description String?
+  features    Json    // Array of feature strings
+
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, language])
+  @@map("package_translations")
+}
+
+// ============================================
+// INQUIRIES / CONTACT FORM
+// ============================================
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum InquiryType {
+  GENERAL
+  SERVICE
+  SUPPORT
+  QUOTE
+  PARTNERSHIP
+}
+
+model Inquiry {
+  id          String        @id @default(uuid())
+  type        InquiryType   @default(GENERAL)
+  status      InquiryStatus @default(NEW)
+  firstName   String        @map("first_name")
+  lastName    String        @map("last_name")
+  email       String
+  phone       String?
+  company     String?
+  subject     String
+  message     String
+  serviceSlug String?       @map("service_slug")
+  packageSlug String?       @map("package_slug")
+  language    String        @default("no")
+  assignedTo  String?       @map("assigned_to")
+  notes       String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  assignedUser User? @relation(fields: [assignedTo], references: [id])
+
+  @@map("inquiries")
+}
+
+// ============================================
+// TESTIMONIALS
+// ============================================
+
+model Testimonial {
+  id          String   @id @default(uuid())
+  authorName  String   @map("author_name")
+  authorRole  String?  @map("author_role")
+  company     String?
+  avatarUrl   String?  @map("avatar_url")
+  rating      Int      @default(5)
+  isActive    Boolean  @default(true) @map("is_active")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdBy   String?  @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  creator      User?                    @relation(fields: [createdBy], references: [id])
+  translations TestimonialTranslation[]
+
+  @@map("testimonials")
+}
+
+model TestimonialTranslation {
+  id            String @id @default(uuid())
+  testimonialId String @map("testimonial_id")
+  language      String @default("no")
+  content       String
+
+  testimonial Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+
+  @@unique([testimonialId, language])
+  @@map("testimonial_translations")
+}
+
+// ============================================
+// BLOG
+// ============================================
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogPost {
+  id          String         @id @default(uuid())
+  slug        String         @unique
+  authorId    String         @map("author_id")
+  imageUrl    String?        @map("image_url")
+  status      BlogPostStatus @default(DRAFT)
+  publishedAt DateTime?      @map("published_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  author       User                  @relation(fields: [authorId], references: [id])
+  translations BlogPostTranslation[]
+  tags         BlogPostTag[]
+
+  @@map("blog_posts")
+}
+
+model BlogPostTranslation {
+  id         String  @id @default(uuid())
+  postId     String  @map("post_id")
+  language   String  @default("no")
+  title      String
+  excerpt    String?
+  content    String
+  metaTitle  String? @map("meta_title")
+  metaDesc   String? @map("meta_description")
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, language])
+  @@map("blog_post_translations")
+}
+
+model BlogTag {
+  id        String        @id @default(uuid())
+  slug      String        @unique
+  nameNo    String        @map("name_no")
+  nameEn    String        @map("name_en")
+  createdAt DateTime      @default(now()) @map("created_at")
+  posts     BlogPostTag[]
+
+  @@map("blog_tags")
+}
+
+model BlogPostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("blog_post_tags")
+}
+
+// ============================================
+// SITE SETTINGS / CONTENT
+// ============================================
+
+model SiteSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  valueNo   String?  @map("value_no")
+  valueEn   String?  @map("value_en")
+  type      String   @default("text") // text, html, json, image
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}
