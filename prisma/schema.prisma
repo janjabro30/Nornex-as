@@ -379,3 +379,25 @@ model Certification {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// ============== PARTNERS ==============
+
+model Partner {
+  id                String   @id @default(uuid())
+  companyName       String
+  websiteUrl        String?
+  logoUrl           String
+  testimonialText   String?
+  spokespersonName  String?
+  spokespersonTitle String?
+  starRating        Int      @default(5)
+  displayOrder      Int      @default(autoincrement())
+  isActive          Boolean  @default(true)
+  showInCarousel    Boolean  @default(true)
+  showTestimonial   Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([displayOrder])
+}

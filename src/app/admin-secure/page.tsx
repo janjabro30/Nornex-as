@@ -12,6 +12,7 @@ import {
   FileText,
   Share2,
   BarChart3,
+  Building2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,13 @@ export default function AdminDashboard() {
       description: "Manage social accounts and schedule posts",
       icon: Share2,
       href: "/admin-secure/social",
+      badge: "Marketing",
+    },
+    {
+      title: "Partners",
+      description: "Manage partner logos and testimonials",
+      icon: Building2,
+      href: "/admin-secure/partners",
       badge: "Marketing",
     },
     {

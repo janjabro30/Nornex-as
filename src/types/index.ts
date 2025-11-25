@@ -1,3 +1,21 @@
+// Partner Types
+export interface Partner {
+  id: string;
+  companyName: string;
+  websiteUrl?: string;
+  logoUrl: string;
+  testimonialText?: string;
+  spokespersonName?: string;
+  spokespersonTitle?: string;
+  starRating: number;
+  displayOrder: number;
+  isActive: boolean;
+  showInCarousel: boolean;
+  showTestimonial: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Product Types
 export type ProductGrade = "A" | "B" | "C" | "NEW";
 

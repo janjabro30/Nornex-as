@@ -15,9 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductCard } from "@/components/shop";
+import { PartnersCarousel, PartnersTestimonials } from "@/components/partners";
 import { useAppStore } from "@/store";
 import { getTranslation } from "@/lib/translations";
-import { mockProducts, totalEnvironmentalImpact } from "@/lib/mock-data";
+import { mockProducts, totalEnvironmentalImpact, mockPartners } from "@/lib/mock-data";
 
 export default function HomePage() {
   const { language } = useAppStore();
@@ -190,6 +191,24 @@ export default function HomePage() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {language === "no" ? "Våre samarbeidspartnere" : "Our Partners"}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              {language === "no"
+                ? "Vi er stolte av å samarbeide med ledende selskaper som deler vår visjon om bærekraftig IT."
+                : "We are proud to partner with leading companies that share our vision of sustainable IT."}
+            </p>
+          </div>
+          <PartnersCarousel partners={mockPartners} />
+          <PartnersTestimonials partners={mockPartners} />
         </div>
       </section>
 

@@ -1,4 +1,4 @@
-import type { Product, EnvironmentalMetric, Certification } from "@/types";
+import type { Product, EnvironmentalMetric, Certification, Partner } from "@/types";
 
 export const mockProducts: Product[] = [
   {
@@ -428,4 +428,136 @@ export const productBrands = [
   "Samsung",
   "Cisco",
   "Western Digital"
+];
+
+// Mock Partners Data
+export const mockPartners: Partner[] = [
+  {
+    id: "1",
+    companyName: "Microsoft Norge",
+    websiteUrl: "https://microsoft.com/no-no",
+    logoUrl: "/images/partners/microsoft.svg",
+    testimonialText: "Nornex har vært en utmerket partner for vårt bærekraftsprogram. Deres profesjonelle tilnærming til IT-resirkulering og refurbishing har hjulpet oss å nå våre miljømål.",
+    spokespersonName: "Erik Hansen",
+    spokespersonTitle: "Sustainability Director",
+    starRating: 5,
+    displayOrder: 1,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-06-15"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "2",
+    companyName: "Telenor",
+    websiteUrl: "https://telenor.no",
+    logoUrl: "/images/partners/telenor.svg",
+    testimonialText: "Vi har samarbeidet med Nornex i over 3 år. Deres pålitelige service og høye kvalitet på refurbished utstyr har gjort dem til vår foretrukne leverandør.",
+    spokespersonName: "Maria Olsen",
+    spokespersonTitle: "IT Procurement Manager",
+    starRating: 5,
+    displayOrder: 2,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-07-20"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "3",
+    companyName: "DNB",
+    websiteUrl: "https://dnb.no",
+    logoUrl: "/images/partners/dnb.svg",
+    testimonialText: "Nornex leverer konsekvent høykvalitets IT-utstyr med fokus på sikkerhet og bærekraft. En partner vi stoler på.",
+    spokespersonName: "Anders Johansen",
+    spokespersonTitle: "Chief Technology Officer",
+    starRating: 5,
+    displayOrder: 3,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-08-10"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "4",
+    companyName: "Equinor",
+    websiteUrl: "https://equinor.com",
+    logoUrl: "/images/partners/equinor.svg",
+    testimonialText: "Som en ledende energibedrift setter vi stor pris på Nornex sitt engasjement for miljøvennlig IT. Utmerket samarbeid!",
+    spokespersonName: "Lars Kristiansen",
+    spokespersonTitle: "Environmental Manager",
+    starRating: 4,
+    displayOrder: 4,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-09-05"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "5",
+    companyName: "Norsk Hydro",
+    websiteUrl: "https://hydro.com",
+    logoUrl: "/images/partners/hydro.svg",
+    testimonialText: "Nornex har hjulpet oss med å redusere vårt IT-avfall betydelig. Fantastisk service og kvalitet.",
+    spokespersonName: "Kristine Berg",
+    spokespersonTitle: "Sustainability Lead",
+    starRating: 5,
+    displayOrder: 5,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-10-12"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "6",
+    companyName: "Yara",
+    websiteUrl: "https://yara.com",
+    logoUrl: "/images/partners/yara.svg",
+    testimonialText: "Pålitelig og profesjonell partner for bærekraftig IT-utstyr. Anbefales på det sterkeste.",
+    spokespersonName: "Thomas Nilsen",
+    spokespersonTitle: "IT Director",
+    starRating: 5,
+    displayOrder: 6,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-11-20"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "7",
+    companyName: "Storebrand",
+    websiteUrl: "https://storebrand.no",
+    logoUrl: "/images/partners/storebrand.svg",
+    testimonialText: "Nornex deler vår visjon om bærekraft. Utmerket samarbeid og kvalitetsprodukter.",
+    spokespersonName: "Ingrid Solberg",
+    spokespersonTitle: "Head of Procurement",
+    starRating: 4,
+    displayOrder: 7,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2023-12-01"),
+    updatedAt: new Date("2024-01-10")
+  },
+  {
+    id: "8",
+    companyName: "Aker Solutions",
+    websiteUrl: "https://akersolutions.com",
+    logoUrl: "/images/partners/aker.svg",
+    testimonialText: "Fremragende service og engasjement for miljøet. Nornex er en verdifull partner.",
+    spokespersonName: "Per Eriksen",
+    spokespersonTitle: "Operations Manager",
+    starRating: 5,
+    displayOrder: 8,
+    isActive: true,
+    showInCarousel: true,
+    showTestimonial: true,
+    createdAt: new Date("2024-01-05"),
+    updatedAt: new Date("2024-01-10")
+  }
 ];
