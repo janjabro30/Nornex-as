@@ -128,6 +128,8 @@ export default function UsersView() {
       TECHNICIAN: "bg-green-100 text-green-800",
       STAFF: "bg-gray-100 text-gray-800",
       CUSTOMER: "bg-gray-100 text-gray-800",
+      VIEW_ONLY: "bg-slate-100 text-slate-800",
+      SUPPORT: "bg-cyan-100 text-cyan-800",
     };
     const label = roleOptions.find((r) => r.value === role)?.label || role;
     return <Badge className={colors[role]}>{label}</Badge>;
