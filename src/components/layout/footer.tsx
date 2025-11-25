@@ -135,8 +135,8 @@ export function Footer() {
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  Teknologiveien 1<br />
-                  0001 Oslo, Norway
+                  Brynsveien 18<br />
+                  0667 Oslo, Norway
                 </span>
               </li>
               <li className="flex items-center space-x-3">
