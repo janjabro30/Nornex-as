@@ -60,12 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Basic form validation
-            const formData = new FormData(this);
+            // Basic form validation - only check required fields
+            const requiredFields = this.querySelectorAll('[required]');
             let isValid = true;
             
-            formData.forEach((value, key) => {
-                if (!value.trim()) {
+            requiredFields.forEach((field) => {
+                if (!field.value.trim()) {
                     isValid = false;
                 }
             });
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (isTime) return; // Don't animate time values like "24/7"
         
-        const cleanNumber = parseInt(text.replace(/[^0-9]/g, ''));
+        const cleanNumber = parseInt(text.replace(/[^0-9]/g, ''), 10);
         if (isNaN(cleanNumber)) return;
         
         let current = 0;
