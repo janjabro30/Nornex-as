@@ -12,9 +12,9 @@ import {
   Leaf,
   Recycle,
   Store,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useCartStore, useAppStore } from "@/store";
 import { getTranslation } from "@/lib/translations";
 
@@ -43,8 +43,9 @@ export function Header() {
   const navLinks = [
     { href: "/", label: t.nav.home },
     { href: "/nettbutikk", label: t.nav.shop, icon: Store },
-    { href: "/selg-til-oss", label: t.nav.sellToUs, badge: t.nav.newBadge, icon: Recycle },
-    { href: "/miljo", label: t.nav.environment, badge: t.nav.newBadge, icon: Leaf },
+    { href: "/tjenester", label: language === "no" ? "Tjenester" : "Services", icon: Wrench },
+    { href: "/selg-til-oss", label: t.nav.sellToUs, icon: Recycle },
+    { href: "/miljo", label: t.nav.environment, icon: Leaf },
   ];
 
   const toggleLanguage = () => {
@@ -78,18 +79,13 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-green-600 ${
-                  pathname === link.href
+                  pathname === link.href || pathname.startsWith(link.href + "/")
                     ? "text-green-600"
                     : "text-gray-700"
                 }`}
               >
                 {link.icon && <link.icon className="w-4 h-4" />}
                 <span>{link.label}</span>
-                {link.badge && (
-                  <Badge variant="success" className="ml-1 text-[10px] px-1.5 py-0">
-                    {link.badge}
-                  </Badge>
-                )}
               </Link>
             ))}
           </nav>
@@ -147,7 +143,7 @@ export function Header() {
                   key={link.href}
                   href={link.href}
                   className={`flex items-center space-x-2 text-sm font-medium transition-colors hover:text-green-600 ${
-                    pathname === link.href
+                    pathname === link.href || pathname.startsWith(link.href + "/")
                       ? "text-green-600"
                       : "text-gray-700"
                   }`}
@@ -155,11 +151,6 @@ export function Header() {
                 >
                   {link.icon && <link.icon className="w-4 h-4" />}
                   <span>{link.label}</span>
-                  {link.badge && (
-                    <Badge variant="success" className="text-[10px] px-1.5 py-0">
-                      {link.badge}
-                    </Badge>
-                  )}
                 </Link>
               ))}
             </div>

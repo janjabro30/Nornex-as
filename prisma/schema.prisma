@@ -47,6 +47,8 @@ model User {
   addresses         Address[]
   socialAccounts    SocialAccount[]
   scheduledPosts    ScheduledPost[]
+  repairRequests    RepairRequest[]
+  tradeInRequests   TradeInRequest[]
 
   @@index([email])
   @@index([role])
@@ -378,4 +380,230 @@ model Certification {
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// ============== SERVICES ==============
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+}
+
+model Service {
+  id              String         @id @default(uuid())
+  name            String
+  nameNo          String         // Norwegian name
+  slug            String         @unique
+  tagline         String?
+  taglineNo       String?        // Norwegian tagline
+  description     String
+  descriptionNo   String         // Norwegian description
+  iconName        String?        // Lucide icon name
+  iconUrl         String?        // Custom icon URL
+  backgroundColor String?
+  featuredImage   String?
+  status          ServiceStatus  @default(DRAFT)
+  displayOrder    Int            @default(0)
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  ogImage         String?
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  steps           ServiceStep[]
+  benefits        ServiceBenefit[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([displayOrder])
+}
+
+model ServiceStep {
+  id            String   @id @default(uuid())
+  serviceId     String
+  stepNumber    Int
+  title         String
+  titleNo       String   // Norwegian title
+  description   String
+  descriptionNo String   // Norwegian description
+  iconName      String?  // Lucide icon name
+  iconUrl       String?  // Custom icon URL
+  duration      String?  // Estimated duration
+  helpText      String?
+  displayOrder  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@index([stepNumber])
+}
+
+model ServiceBenefit {
+  id            String   @id @default(uuid())
+  serviceId     String
+  title         String
+  titleNo       String   // Norwegian title
+  description   String?
+  descriptionNo String?  // Norwegian description
+  iconName      String?  // Lucide icon name or "checkmark"
+  iconUrl       String?  // Custom icon URL
+  displayOrder  Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+}
+
+// ============== REPAIR REQUESTS ==============
+
+enum RepairStatus {
+  PENDING
+  QUOTE_SENT
+  ACCEPTED
+  IN_PROGRESS
+  WAITING_PARTS
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+enum RepairUrgency {
+  STANDARD
+  EXPRESS
+  URGENT
+}
+
+model RepairRequest {
+  id              String        @id @default(uuid())
+  requestNumber   String        @unique
+  userId          String?
+  status          RepairStatus  @default(PENDING)
+  
+  // Contact Info
+  contactName     String
+  contactEmail    String
+  contactPhone    String?
+  company         String?
+  
+  // Pricing
+  estimatedPrice  Float?
+  finalPrice      Float?
+  
+  // Notes
+  internalNotes   String?
+  customerNotes   String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  devices         RepairDevice[]
+  user            User?         @relation(fields: [userId], references: [id])
+
+  @@index([requestNumber])
+  @@index([userId])
+  @@index([status])
+}
+
+model RepairDevice {
+  id                String        @id @default(uuid())
+  repairRequestId   String
+  deviceType        String
+  brand             String
+  model             String
+  serialNumber      String?
+  quantity          Int           @default(1)
+  problemDescription String
+  repairType        String?
+  urgency           RepairUrgency @default(STANDARD)
+  
+  // Repair Details
+  diagnosisNotes    String?
+  partsUsed         String?
+  laborHours        Float?
+  partsCost         Float?
+  laborCost         Float?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  repairRequest     RepairRequest @relation(fields: [repairRequestId], references: [id], onDelete: Cascade)
+
+  @@index([repairRequestId])
+}
+
+// ============== TRADE-IN REQUESTS ==============
+
+enum TradeInStatus {
+  PENDING
+  QUOTE_SENT
+  ACCEPTED
+  DEVICE_RECEIVED
+  INSPECTED
+  COMPLETED
+  CANCELLED
+}
+
+model TradeInRequest {
+  id                String          @id @default(uuid())
+  requestNumber     String          @unique
+  userId            String?
+  status            TradeInStatus   @default(PENDING)
+  
+  // Contact Info
+  contactName       String
+  contactEmail      String
+  contactPhone      String?
+  company           String?
+  
+  // Trade-in values
+  estimatedValue    Float?
+  finalValue        Float?
+  discountApplied   Float?
+  
+  // New device selection
+  newDeviceId       String?
+  newDevicePrice    Float?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  devices           TradeInDevice[]
+  user              User?           @relation(fields: [userId], references: [id])
+
+  @@index([requestNumber])
+  @@index([userId])
+  @@index([status])
+}
+
+model TradeInDevice {
+  id                String         @id @default(uuid())
+  tradeInRequestId  String
+  deviceType        String
+  brand             String
+  model             String
+  serialNumber      String?
+  quantity          Int            @default(1)
+  condition         DeviceCondition
+  conditionNotes    String?
+  accessories       String[]
+  
+  // Valuation
+  estimatedValue    Float?
+  inspectedValue    Float?
+  
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tradeInRequest    TradeInRequest @relation(fields: [tradeInRequestId], references: [id], onDelete: Cascade)
+
+  @@index([tradeInRequestId])
 }
