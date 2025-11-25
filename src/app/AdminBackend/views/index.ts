@@ -1,0 +1,12 @@
+export { default as DashboardView } from "./DashboardView";
+export { default as EmailsView } from "./EmailsView";
+export { default as SocialView } from "./SocialView";
+export { default as PartnersView } from "./PartnersView";
+export { default as ApisView } from "./ApisView";
+export { default as SeoView } from "./SeoView";
+export { default as OrdersView } from "./OrdersView";
+export { default as RepairsView } from "./RepairsView";
+export { default as SellbackView } from "./SellbackView";
+export { default as ContractsView } from "./ContractsView";
+export { default as SettingsView } from "./SettingsView";
+export { default as UsersView } from "./UsersView";
