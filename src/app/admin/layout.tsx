@@ -13,6 +13,18 @@ const navigation = [
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
+/**
+ * Determines if a navigation item is active based on the current pathname
+ */
+function isNavItemActive(itemHref: string, currentPath: string): boolean {
+  // Exact match for dashboard
+  if (itemHref === '/admin') {
+    return currentPath === '/admin'
+  }
+  // For other items, check if current path starts with the item href
+  return currentPath.startsWith(itemHref)
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
@@ -35,7 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="p-4">
           <ul className="space-y-1">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
+              const isActive = isNavItemActive(item.href, pathname)
               return (
                 <li key={item.name}>
                   <Link

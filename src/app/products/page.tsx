@@ -305,17 +305,21 @@ export default function ProductsPage() {
     if (filters.category) {
       result = result.filter((p) => p.categoryId === filters.category)
     }
-    if (filters.minPrice) {
-      result = result.filter((p) => (p.salePrice || p.price) >= filters.minPrice!)
+    if (filters.minPrice !== undefined) {
+      const minPrice = filters.minPrice
+      result = result.filter((p) => (p.salePrice || p.price) >= minPrice)
     }
-    if (filters.maxPrice) {
-      result = result.filter((p) => (p.salePrice || p.price) <= filters.maxPrice!)
+    if (filters.maxPrice !== undefined) {
+      const maxPrice = filters.maxPrice
+      result = result.filter((p) => (p.salePrice || p.price) <= maxPrice)
     }
     if (filters.brand && filters.brand.length > 0) {
-      result = result.filter((p) => p.brand && filters.brand!.includes(p.brand))
+      const brands = filters.brand
+      result = result.filter((p) => p.brand && brands.includes(p.brand))
     }
     if (filters.condition && filters.condition.length > 0) {
-      result = result.filter((p) => filters.condition!.includes(p.condition))
+      const conditions = filters.condition
+      result = result.filter((p) => conditions.includes(p.condition))
     }
     if (filters.rating) {
       result = result.filter((p) => p.rating >= filters.rating!)
