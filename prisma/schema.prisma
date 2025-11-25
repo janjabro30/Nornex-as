@@ -1,0 +1,381 @@
+// Nornex AS Platform - Prisma Schema
+// IT Services + E-commerce Platform with Sustainability Features
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============== USER & AUTHENTICATION ==============
+
+enum UserRole {
+  CUSTOMER
+  STAFF
+  TECHNICIAN
+  MANAGER
+  ACCOUNTANT
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id                String          @id @default(uuid())
+  email             String          @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  phone             String?
+  role              UserRole        @default(CUSTOMER)
+  isActive          Boolean         @default(true)
+  mfaEnabled        Boolean         @default(false)
+  mfaSecret         String?
+  failedLoginCount  Int             @default(0)
+  lockedUntil       DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  orders            Order[]
+  buybackRequests   BuybackRequest[]
+  auditLogs         AuditLog[]
+  sessions          Session[]
+  addresses         Address[]
+  socialAccounts    SocialAccount[]
+  scheduledPosts    ScheduledPost[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  userId       String
+  type         String   @default("shipping") // shipping, billing
+  street       String
+  city         String
+  postalCode   String
+  country      String   @default("Norway")
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders       Order[]
+
+  @@index([userId])
+}
+
+// ============== E-COMMERCE ==============
+
+enum ProductGrade {
+  A
+  B
+  C
+  NEW
+}
+
+enum ProductCategory {
+  LAPTOPS
+  DESKTOPS
+  MONITORS
+  PHONES
+  TABLETS
+  ACCESSORIES
+  NETWORKING
+  STORAGE
+  PRINTERS
+  OTHER
+}
+
+model Product {
+  id                  String          @id @default(uuid())
+  sku                 String          @unique
+  name                String
+  nameNo              String          // Norwegian name
+  description         String
+  descriptionNo       String          // Norwegian description
+  category            ProductCategory
+  brand               String
+  model               String?
+  price               Float
+  originalPrice       Float?
+  stock               Int             @default(0)
+  grade               ProductGrade    @default(NEW)
+  sustainabilityScore Int             @default(0) // 0-100
+  co2Saved            Float           @default(0) // kg CO2 saved
+  images              String[]
+  specifications      Json?
+  isActive            Boolean         @default(true)
+  isFeatured          Boolean         @default(false)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  orderItems          OrderItem[]
+
+  @@index([category])
+  @@index([grade])
+  @@index([isActive])
+  @@index([brand])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique
+  userId          String
+  addressId       String?
+  status          OrderStatus @default(PENDING)
+  subtotal        Float
+  tax             Float
+  shipping        Float
+  total           Float
+  notes           String?
+  trackingNumber  String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user            User        @relation(fields: [userId], references: [id])
+  address         Address?    @relation(fields: [addressId], references: [id])
+  items           OrderItem[]
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  price       Float
+  createdAt   DateTime @default(now())
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// ============== BUYBACK PROGRAM ==============
+
+enum DeviceCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  BROKEN
+}
+
+enum BuybackStatus {
+  QUOTE_REQUESTED
+  QUOTE_SENT
+  ACCEPTED
+  DEVICE_RECEIVED
+  INSPECTED
+  PAYMENT_SENT
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+model BuybackRequest {
+  id                  String          @id @default(uuid())
+  userId              String?
+  status              BuybackStatus   @default(QUOTE_REQUESTED)
+  
+  // Device Info
+  deviceType          String
+  brand               String
+  model               String
+  condition           DeviceCondition
+  conditionNotes      String?
+  serialNumber        String?
+  
+  // Contact Info (for non-logged-in users)
+  contactName         String
+  contactEmail        String
+  contactPhone        String?
+  
+  // Quote
+  estimatedPrice      Float?
+  finalPrice          Float?
+  inspectionNotes     String?
+  
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  user                User?           @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([userId])
+}
+
+// ============== SECURITY & AUDIT ==============
+
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  LOGIN_FAILED
+  PASSWORD_CHANGED
+  MFA_ENABLED
+  MFA_DISABLED
+  USER_CREATED
+  USER_UPDATED
+  USER_DELETED
+  ORDER_CREATED
+  ORDER_UPDATED
+  PRODUCT_CREATED
+  PRODUCT_UPDATED
+  ADMIN_ACCESS
+  SECURITY_ALERT
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  userId      String?
+  action      AuditAction
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+
+  user        User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model SecuritySetting {
+  id                      String   @id @default(uuid())
+  maxLoginAttempts        Int      @default(5)
+  lockoutDuration         Int      @default(15) // minutes
+  sessionTimeout          Int      @default(60) // minutes
+  requireMfaForAdmin      Boolean  @default(true)
+  passwordMinLength       Int      @default(12)
+  passwordRequireSpecial  Boolean  @default(true)
+  adminSecretPath         String   @default("admin-secure")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+// ============== SOCIAL MEDIA ==============
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  TWITTER
+  YOUTUBE
+}
+
+model SocialAccount {
+  id            String         @id @default(uuid())
+  userId        String
+  platform      SocialPlatform
+  accountName   String
+  accessToken   String?
+  refreshToken  String?
+  tokenExpiry   DateTime?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts         ScheduledPost[]
+
+  @@unique([userId, platform])
+  @@index([userId])
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+model ScheduledPost {
+  id              String        @id @default(uuid())
+  userId          String
+  accountId       String
+  content         String
+  mediaUrls       String[]
+  scheduledFor    DateTime
+  publishedAt     DateTime?
+  status          PostStatus    @default(DRAFT)
+  errorMessage    String?
+  analytics       Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account         SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([scheduledFor])
+  @@index([status])
+}
+
+// ============== ENVIRONMENTAL IMPACT ==============
+
+model EnvironmentalMetric {
+  id              String   @id @default(uuid())
+  year            Int
+  month           Int
+  devicesRecycled Int      @default(0)
+  co2SavedKg      Float    @default(0)
+  eWasteKg        Float    @default(0)
+  treesEquivalent Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([year, month])
+}
+
+model Certification {
+  id              String   @id @default(uuid())
+  name            String
+  nameNo          String
+  description     String
+  descriptionNo   String
+  issuer          String
+  validFrom       DateTime
+  validUntil      DateTime?
+  imageUrl        String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
