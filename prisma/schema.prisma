@@ -1,0 +1,298 @@
+// This is your Prisma schema file
+// Learn more at: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("user") // admin, user
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+  cart      Cart?
+}
+
+// Product Categories
+model Category {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  parentId     String?
+  parent       Category?             @relation("CategoryChildren", fields: [parentId], references: [id])
+  children     Category[]            @relation("CategoryChildren")
+  image        String?
+  sortOrder    Int                   @default(0)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  products     Product[]
+  translations CategoryTranslation[]
+  filters      CategoryFilter[]
+}
+
+model CategoryTranslation {
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  language    String   // "en", "no"
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([categoryId, language])
+}
+
+// Category Filters for dynamic filtering
+model CategoryFilter {
+  id           String              @id @default(cuid())
+  categoryId   String
+  category     Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  filterKey    String
+  filterType   String              // "range", "select", "multiselect"
+  sortOrder    Int                 @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  translations FilterTranslation[]
+
+  @@unique([categoryId, filterKey])
+}
+
+model FilterTranslation {
+  id       String         @id @default(cuid())
+  filterId String
+  filter   CategoryFilter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+  language String
+  label    String
+  options  String? // JSON array of options for select/multiselect
+
+  @@unique([filterId, language])
+}
+
+// Products
+model Product {
+  id           String               @id @default(cuid())
+  sku          String               @unique
+  categoryId   String
+  category     Category             @relation(fields: [categoryId], references: [id])
+  brand        String?
+  price        Float
+  salePrice    Float?
+  cost         Float?
+  stock        Int                  @default(0)
+  condition    String               @default("new") // new, refurbished, used
+  featured     Boolean              @default(false)
+  active       Boolean              @default(true)
+  rating       Float                @default(0)
+  reviewCount  Int                  @default(0)
+  specs        String? // JSON string of specifications
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  translations ProductTranslation[]
+  images       ProductImage[]
+  reviews      Review[]
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  wishlistItems WishlistItem[]
+}
+
+model ProductTranslation {
+  id               String   @id @default(cuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  language         String   // "en", "no"
+  name             String
+  description      String?
+  shortDescription String?
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([productId, language])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+// Product Reviews
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  email     String
+  rating    Int
+  title     String?
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+// Shopping Cart
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String?    @unique
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+}
+
+// Wishlist
+model Wishlist {
+  id        String         @id @default(cuid())
+  userId    String?
+  sessionId String?
+  createdAt DateTime       @default(now())
+  items     WishlistItem[]
+}
+
+model WishlistItem {
+  id         String   @id @default(cuid())
+  wishlistId String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([wishlistId, productId])
+}
+
+// Orders
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  status          String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  subtotal        Float
+  shipping        Float       @default(0)
+  tax             Float       @default(0)
+  total           Float
+  paymentMethod   String      // vipps, card, invoice
+  paymentStatus   String      @default("pending") // pending, paid, failed, refunded
+  shippingAddress String      // JSON
+  billingAddress  String?     // JSON
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  sku       String
+  price     Float
+  quantity  Int
+  total     Float
+
+  @@index([orderId])
+}
+
+// Social Media Management
+model SocialMediaAccount {
+  id           String       @id @default(cuid())
+  platform     String       @unique // facebook, instagram, linkedin, tiktok
+  accountName  String?
+  profileUrl   String?
+  accessToken  String?
+  refreshToken String?
+  appId        String?
+  appSecret    String?
+  pageId       String?
+  clientId     String?
+  clientSecret String?
+  isConnected  Boolean      @default(false)
+  isActive     Boolean      @default(true)
+  lastSync     DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  posts        SocialPost[] @relation("AccountPosts")
+}
+
+model SocialPost {
+  id           String             @id @default(cuid())
+  content      String
+  mediaUrls    String?            // JSON array of media URLs
+  platforms    String             // JSON array of platform names
+  status       String             @default("draft") // draft, scheduled, published, failed
+  scheduledFor DateTime?
+  publishedAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  accountId    String?
+  account      SocialMediaAccount? @relation("AccountPosts", fields: [accountId], references: [id])
+  results      SocialPostResult[]
+}
+
+model SocialPostResult {
+  id         String     @id @default(cuid())
+  postId     String
+  post       SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform   String
+  postUrl    String?
+  platformId String?
+  status     String     // success, failed
+  error      String?
+  likes      Int        @default(0)
+  shares     Int        @default(0)
+  comments   Int        @default(0)
+  reach      Int        @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([postId, platform])
+}
+
+// Site Settings (Logo, Tagline, etc.)
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("text") // text, image, json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
