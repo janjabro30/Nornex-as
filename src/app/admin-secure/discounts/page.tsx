@@ -76,6 +76,15 @@ export default function AdminDiscountsPage() {
     return Math.round((current / max) * 100);
   };
 
+  // Calculate expiring soon count - using initial timestamp to avoid re-renders
+  const [checkDate] = useState(() => Date.now());
+  const expiringSoonCount = discounts.filter((d) => {
+    const daysUntil = Math.ceil(
+      (new Date(d.validUntil).getTime() - checkDate) / (1000 * 60 * 60 * 24)
+    );
+    return daysUntil <= 30 && daysUntil > 0;
+  }).length;
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -129,12 +138,7 @@ export default function AdminDiscountsPage() {
             <CardContent className="py-4">
               <p className="text-sm text-gray-500">Expiring Soon</p>
               <p className="text-2xl font-bold text-orange-600">
-                {discounts.filter((d) => {
-                  const daysUntil = Math.ceil(
-                    (new Date(d.validUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-                  );
-                  return daysUntil <= 30 && daysUntil > 0;
-                }).length}
+                {expiringSoonCount}
               </p>
             </CardContent>
           </Card>

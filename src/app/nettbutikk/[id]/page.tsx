@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ShoppingCart,
   Leaf,
@@ -28,6 +28,7 @@ import { ProductRecommendations } from "@/components/shop/product-recommendation
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const { addItem } = useCartStore();
   const { language } = useAppStore();
   const t = getTranslation(language);
@@ -35,6 +36,40 @@ export default function ProductDetailPage() {
   const [addedToCart, setAddedToCart] = useState(false);
 
   const product = mockProducts.find((p) => p.id === params.id);
+
+  const gradeColors = {
+    A: "bg-green-500",
+    B: "bg-blue-500",
+    C: "bg-yellow-500",
+    NEW: "bg-purple-500",
+  };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem({
+      id: product.id,
+      name: language === "no" ? product.nameNo : product.name,
+      price: product.price,
+      image: product.images[0],
+      grade: product.grade,
+      sku: product.sku,
+    });
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    addItem({
+      id: product.id,
+      name: language === "no" ? product.nameNo : product.name,
+      price: product.price,
+      image: product.images[0],
+      grade: product.grade,
+      sku: product.sku,
+    });
+    router.push("/nettbutikk/kasse");
+  };
 
   if (!product) {
     return (
@@ -51,35 +86,6 @@ export default function ProductDetailPage() {
       </div>
     );
   }
-
-  const gradeColors = {
-    A: "bg-green-500",
-    B: "bg-blue-500",
-    C: "bg-yellow-500",
-    NEW: "bg-purple-500",
-  };
-
-  const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      name: language === "no" ? product.nameNo : product.name,
-      price: product.price,
-      image: product.images[0],
-      grade: product.grade,
-      sku: product.sku,
-    });
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
-  };
-
-  const handleBuyNow = () => {
-    handleAddToCart();
-    window.location.href = "/nettbutikk/kasse";
-  };
-
-  const discountPercent = product.originalPrice 
-    ? Math.round((1 - product.price / product.originalPrice) * 100)
-    : 0;
 
   const extProduct = product as typeof product & { rating?: number; reviewCount?: number };
 

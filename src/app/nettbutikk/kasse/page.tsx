@@ -71,6 +71,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [orderNumber] = useState(() => "NOR-" + Date.now().toString(36).toUpperCase());
 
   const subtotal = getTotal();
   const FREE_SHIPPING_THRESHOLD = 500;
@@ -156,8 +157,8 @@ export default function CheckoutPage() {
           </p>
           <p className="text-sm text-gray-500 mb-8">
             {language === "no"
-              ? "Ordrenummer: NOR-" + Date.now().toString(36).toUpperCase()
-              : "Order number: NOR-" + Date.now().toString(36).toUpperCase()}
+              ? `Ordrenummer: ${orderNumber}`
+              : `Order number: ${orderNumber}`}
           </p>
           <Link href="/nettbutikk">
             <Button>
