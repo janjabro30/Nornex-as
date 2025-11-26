@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -12,6 +12,10 @@ import {
   Package,
   Shield,
   Truck,
+  Zap,
+  Heart,
+  Star,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,12 +24,15 @@ import { useCartStore, useAppStore } from "@/store";
 import { formatPrice } from "@/lib/utils";
 import { getTranslation } from "@/lib/translations";
 import { mockProducts } from "@/lib/mock-data";
+import { ProductRecommendations } from "@/components/shop/product-recommendations";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { addItem } = useCartStore();
   const { language } = useAppStore();
   const t = getTranslation(language);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   const product = mockProducts.find((p) => p.id === params.id);
 
@@ -61,7 +68,20 @@ export default function ProductDetailPage() {
       grade: product.grade,
       sku: product.sku,
     });
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    window.location.href = "/nettbutikk/kasse";
+  };
+
+  const discountPercent = product.originalPrice 
+    ? Math.round((1 - product.price / product.originalPrice) * 100)
+    : 0;
+
+  const extProduct = product as typeof product & { rating?: number; reviewCount?: number };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -166,6 +186,11 @@ export default function ProductDetailPage() {
                     {t.shop.product.inStock} ({product.stock}{" "}
                     {language === "no" ? "stk" : "pcs"})
                   </span>
+                  {product.stock < 5 && (
+                    <Badge variant="destructive" className="ml-2">
+                      {language === "no" ? `Bare ${product.stock} igjen!` : `Only ${product.stock} left!`}
+                    </Badge>
+                  )}
                 </>
               ) : (
                 <span className="text-red-600 font-medium">
@@ -174,16 +199,71 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Add to Cart */}
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={handleAddToCart}
-              disabled={product.stock === 0}
-            >
-              <ShoppingCart className="mr-2 w-5 h-5" />
-              {t.shop.product.addToCart}
-            </Button>
+            {/* Rating */}
+            {extProduct.rating && (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                  <span className="font-bold">{extProduct.rating}</span>
+                </div>
+                {extProduct.reviewCount && (
+                  <span className="text-gray-500">
+                    ({extProduct.reviewCount} {language === "no" ? "anmeldelser" : "reviews"})
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              {product.stock > 0 ? (
+                <>
+                  <div className="flex gap-3">
+                    <Button
+                      size="lg"
+                      className="flex-1"
+                      onClick={handleAddToCart}
+                    >
+                      {addedToCart ? (
+                        <>
+                          <Check className="mr-2 w-5 h-5" />
+                          {language === "no" ? "Lagt til!" : "Added!"}
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="mr-2 w-5 h-5" />
+                          {language === "no" ? "Legg i handlekurv" : t.shop.product.addToCart}
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant={isWishlisted ? "secondary" : "outline"}
+                      onClick={() => setIsWishlisted(!isWishlisted)}
+                    >
+                      <Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+                    </Button>
+                  </div>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleBuyNow}
+                  >
+                    <Zap className="mr-2 w-5 h-5" />
+                    {language === "no" ? "Kjøp nå" : "Buy Now"}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Bell className="mr-2 w-5 h-5" />
+                  {language === "no" ? "Varsle meg når tilgjengelig" : "Notify me when available"}
+                </Button>
+              )}
 
             {/* Features */}
             <div className="grid grid-cols-2 gap-4 pt-4 border-t">
@@ -227,8 +307,13 @@ export default function ProductDetailPage() {
                 </dl>
               </div>
             )}
+            </div>
           </div>
         </div>
+
+        {/* Product Recommendations */}
+        <ProductRecommendations currentProduct={product} type="bought-together" />
+        <ProductRecommendations currentProduct={product} type="similar" />
       </div>
     </div>
   );
