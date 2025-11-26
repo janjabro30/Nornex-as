@@ -60,7 +60,7 @@ export default function RootLayout({
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+47-XXX-XX-XXX",
+      "telephone": "+47-123-45-678",
       "contactType": "customer service",
       "availableLanguage": ["Norwegian", "English"]
     },

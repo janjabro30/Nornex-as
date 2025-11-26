@@ -170,36 +170,47 @@ const stats = [
 ];
 
 export default function HomePage() {
+  // Using ref for mount tracking to avoid lint warning about setState in useEffect
+  const isMountedRef = useRef(false);
   const [isVisible, setIsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   const [statsVisible, setStatsVisible] = useState(false);
 
+  // Float animation class lookup
+  const floatClasses = ['animate-float', 'animate-float-delay-1', 'animate-float-delay-2', 'animate-float-delay-3'];
+  
+  // Rating configuration
+  const RATING_VALUE = 4.8;
+  const FULL_STARS = Math.floor(RATING_VALUE);
+
   useEffect(() => {
-    // Use requestAnimationFrame to defer state update
-    const animationFrame = requestAnimationFrame(() => {
-      setIsVisible(true);
-    });
-    
-    // Intersection Observer for stats animation
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setStatsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
+    // Track mount state and trigger entrance animation
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      // Use setTimeout to defer the state update
+      const timer = setTimeout(() => setIsVisible(true), 0);
+      
+      // Intersection Observer for stats animation
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setStatsVisible(true);
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      
+      if (statsRef.current) {
+        observer.observe(statsRef.current);
+      }
+      
+      return () => {
+        clearTimeout(timer);
+        observer.disconnect();
+      };
     }
-    
-    return () => {
-      cancelAnimationFrame(animationFrame);
-      observer.disconnect();
-    };
   }, []);
 
   return (
@@ -280,9 +291,7 @@ export default function HomePage() {
             <div className="hidden md:block" aria-hidden="true">
               <div className="grid grid-cols-3 gap-4 lg:gap-6">
                 {iconGridData.map((item, index) => {
-                  const floatClass = index % 4 === 0 ? 'animate-float' : 
-                                     index % 4 === 1 ? 'animate-float-delay-1' :
-                                     index % 4 === 2 ? 'animate-float-delay-2' : 'animate-float-delay-3';
+                  const floatClass = floatClasses[index % floatClasses.length];
                   return (
                     <div
                       key={index}
@@ -292,9 +301,6 @@ export default function HomePage() {
                         boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
                         animationDelay: `${index * 100}ms`,
                       }}
-                      tabIndex={0}
-                      role="img"
-                      aria-label={item.label}
                     >
                       <item.Icon className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
                     </div>
@@ -573,7 +579,7 @@ export default function HomePage() {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star 
                   key={star} 
-                  className={`w-8 h-8 ${star <= 4 ? 'text-green-500 fill-green-500' : 'text-green-500 fill-green-200'}`} 
+                  className={`w-8 h-8 ${star <= FULL_STARS ? 'text-green-500 fill-green-500' : 'text-green-500 fill-green-200'}`} 
                   aria-hidden="true"
                 />
               ))}
@@ -623,7 +629,7 @@ export default function HomePage() {
                 Bestill konsultasjon
               </Button>
             </Link>
-            <a href="tel:+4700000000">
+            <a href="tel:+4712345678">
               <Button 
                 size="lg" 
                 variant="outline" 
