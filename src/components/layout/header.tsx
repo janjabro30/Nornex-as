@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,9 +8,8 @@ import {
   X,
   ShoppingCart,
   User,
-  Globe,
+  Search,
   Leaf,
-  Recycle,
   Store,
   Wrench,
   ChevronDown,
@@ -19,44 +18,75 @@ import {
   FileText,
   Info,
   Phone,
+  Server,
+  Shield,
+  Cloud,
+  Headphones,
+  HardDrive,
+  Globe,
+  Smartphone,
+  Monitor,
+  Code,
+  ArrowRight,
+  Calendar,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useCartStore, useAppStore } from "@/store";
-import { getTranslation } from "@/lib/translations";
+import { SearchModal } from "@/components/modals";
 
-interface DropdownItem {
-  href: string;
-  label: string;
-  icon?: React.ComponentType<{ className?: string }>;
+interface DropdownColumn {
+  title: string;
+  items: {
+    href: string;
+    label: string;
+    icon?: React.ComponentType<{ className?: string }>;
+    emoji?: string;
+  }[];
 }
 
 interface NavLink {
   href: string;
   label: string;
-  icon?: React.ComponentType<{ className?: string }>;
-  badge?: string;
-  dropdown?: DropdownItem[];
+  megaDropdown?: DropdownColumn[];
+  simpleDropdown?: {
+    href: string;
+    label: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
 }
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
   const pathname = usePathname();
-  const { language, setLanguage, isMobileMenuOpen, setMobileMenuOpen } =
-    useAppStore();
+  const { language, isMobileMenuOpen, setMobileMenuOpen } = useAppStore();
   const { items } = useCartStore();
-  const t = getTranslation(language);
+
+  // Handle scroll behavior - show on scroll up, hide on scroll down
+  const handleScroll = useCallback(() => {
+    const currentScrollY = window.scrollY;
+    
+    if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    
+    setIsScrolled(currentScrollY > 10);
+    lastScrollYRef.current = currentScrollY;
+  }, []);
 
   useEffect(() => {
     Promise.resolve().then(() => setIsMounted(true));
     
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target;
@@ -66,209 +96,306 @@ export function Header() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     
+    // Handle ESC key to close dropdowns
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenDropdown(null);
+        setIsSearchOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleScroll, setMobileMenuOpen]);
 
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
+  // Navigation structure with mega dropdown for services
   const navLinks: NavLink[] = [
     { 
       href: "/tjenester", 
       label: language === "no" ? "Tjenester" : "Services",
-      dropdown: [
-        { href: "/tjenester", label: language === "no" ? "Alle tjenester" : "All Services", icon: Building2 },
-        { href: "/nettbutikk", label: language === "no" ? "Nettbutikk" : "Shop", icon: Store },
-        { href: "/reparasjon", label: language === "no" ? "Reparasjon" : "Repair", icon: Wrench },
-        { href: "/selg-til-oss", label: language === "no" ? "Selg til oss" : "Sell to Us", icon: Recycle },
-        { href: "/pricing", label: language === "no" ? "Priser" : "Pricing", icon: FileText },
-      ]
+      megaDropdown: [
+        {
+          title: language === "no" ? "IT-tjenester" : "IT Services",
+          items: [
+            { href: "/tjenester#managed-it", label: "Managed IT", icon: Server },
+            { href: "/tjenester#sikkerhet", label: language === "no" ? "IT-sikkerhet" : "IT Security", icon: Shield },
+            { href: "/tjenester#sky", label: language === "no" ? "Skyløsninger" : "Cloud Solutions", icon: Cloud },
+            { href: "/tjenester#support", label: "24/7 Support", icon: Headphones },
+            { href: "/nettbutikk", label: "Hardware", icon: HardDrive },
+            { href: "/reparasjon", label: language === "no" ? "Reparasjon" : "Repair", icon: Wrench },
+          ],
+        },
+        {
+          title: language === "no" ? "Utvikling" : "Development",
+          items: [
+            { href: "/tjenester#web", label: language === "no" ? "Nettside-utvikling" : "Website Development", icon: Globe, emoji: "🌐" },
+            { href: "/tjenester#app", label: language === "no" ? "App-utvikling" : "App Development", icon: Smartphone, emoji: "📱" },
+            { href: "/tjenester#webapp", label: language === "no" ? "Webapplikasjoner" : "Web Applications", icon: Monitor, emoji: "💻" },
+            { href: "/tjenester#api", label: "API-integrasjoner", icon: Code },
+            { href: "/tjenester#konsultering", label: language === "no" ? "Konsultering" : "Consulting", icon: Users },
+          ],
+        },
+        {
+          title: language === "no" ? "Hurtiglenker" : "Quick Actions",
+          items: [
+            { href: "/tjenester", label: language === "no" ? "Se alle tjenester →" : "View all services →", icon: ArrowRight },
+            { href: "/kontakt", label: language === "no" ? "Bestill konsultasjon →" : "Book consultation →", icon: Calendar },
+            { href: "/pricing", label: language === "no" ? "Priser →" : "Pricing →", icon: DollarSign },
+          ],
+        },
+      ],
     },
-    { href: "/reparasjon", label: language === "no" ? "Reparasjon" : "Repair", icon: Wrench },
-    { href: "/nettbutikk", label: language === "no" ? "Nettbutikk" : "Webshop", icon: Store },
     { 
-      href: "/selg-til-oss", 
-      label: language === "no" ? "Selg til oss" : "Sell to Us", 
-      icon: Recycle,
-      dropdown: [
-        { href: "/selg-til-oss", label: language === "no" ? "Selg enhet" : "Sell Device", icon: Recycle },
-        { href: "/pricing", label: language === "no" ? "Prisguide" : "Price Guide", icon: FileText },
-      ]
+      href: "/nettbutikk", 
+      label: language === "no" ? "Nettbutikk" : "Webshop",
     },
-    { href: "/miljo", label: language === "no" ? "Miljø" : "Environment", icon: Leaf },
+    { 
+      href: "/reparasjon", 
+      label: language === "no" ? "Reparasjon" : "Repair",
+    },
     { 
       href: "/om-oss", 
       label: language === "no" ? "Om oss" : "About",
-      dropdown: [
-        { href: "/om-oss", label: language === "no" ? "Om Nornex" : "About Nornex", icon: Info },
-        { href: "/om-oss#kontakt", label: language === "no" ? "Kontakt" : "Contact", icon: Phone },
-        { href: "/vilkar", label: language === "no" ? "Vilkår" : "Terms", icon: FileText },
-        { href: "/privacy-policy", label: language === "no" ? "Personvern" : "Privacy", icon: Users },
-      ]
+      simpleDropdown: [
+        { href: "/om-oss", label: language === "no" ? "Om NORNEX" : "About NORNEX", icon: Info },
+        { href: "/om-oss#team", label: language === "no" ? "Vårt team" : "Our Team", icon: Users },
+        { href: "/kontakt", label: language === "no" ? "Kontakt oss" : "Contact Us", icon: Phone },
+        { href: "/om-oss#partnere", label: language === "no" ? "Partnere" : "Partners", icon: Building2 },
+      ],
     },
   ];
-
-  const toggleLanguage = () => {
-    setLanguage(language === "no" ? "en" : "no");
-  };
 
   const handleDropdownToggle = (href: string) => {
     setOpenDropdown(openDropdown === href ? null : href);
   };
 
+  const handleMobileAccordion = (href: string) => {
+    setMobileAccordion(mobileAccordion === href ? null : href);
+  };
+
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/95 backdrop-blur-sm shadow-md"
-          : "bg-white"
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-10 h-10 bg-green-600 rounded-lg">
-              <Leaf className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              Nornex<span className="text-green-600">AS</span>
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1" ref={dropdownRef}>
-            {navLinks.map((link) => (
-              <div key={link.href} className="relative">
-                {link.dropdown ? (
-                  <button
-                    onClick={() => handleDropdownToggle(link.href)}
-                    className={`flex items-center space-x-1 px-3 py-2 text-sm font-medium transition-colors hover:text-green-600 rounded-md hover:bg-gray-100 ${
-                      pathname === link.href || pathname.startsWith(link.href + "/")
-                        ? "text-green-600"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {link.icon && <link.icon className="w-4 h-4" />}
-                    <span>{link.label}</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.href ? "rotate-180" : ""}`} />
-                  </button>
-                ) : (
-                  <Link
-                    href={link.href}
-                    className={`flex items-center space-x-1 px-3 py-2 text-sm font-medium transition-colors hover:text-green-600 rounded-md hover:bg-gray-100 ${
-                      pathname === link.href
-                        ? "text-green-600"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {link.icon && <link.icon className="w-4 h-4" />}
-                    <span>{link.label}</span>
-                    {link.badge && (
-                      <Badge variant="success" className="ml-1 text-[10px] px-1.5 py-0">
-                        {link.badge}
-                      </Badge>
-                    )}
-                  </Link>
-                )}
-                
-                {/* Dropdown Menu */}
-                {link.dropdown && openDropdown === link.href && (
-                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
-                    {link.dropdown.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-green-600 transition-colors"
-                        onClick={() => setOpenDropdown(null)}
-                      >
-                        {item.icon && <item.icon className="w-4 h-4" />}
-                        <span>{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+          isVisible ? "translate-y-0" : "-translate-y-full"
+        } ${
+          isScrolled
+            ? "bg-white/95 backdrop-blur-sm shadow-md"
+            : "bg-white"
+        }`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg">
+                <Leaf className="w-6 h-6 text-white" />
               </div>
-            ))}
-          </nav>
-
-          {/* Right Actions */}
-          <div className="flex items-center space-x-2">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-green-600 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-            </button>
-
-            {/* Cart */}
-            <Link href="/nettbutikk/handlekurv" className="relative">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="w-5 h-5" />
-                {isMounted && itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">
-                    {itemCount}
-                  </span>
-                )}
-              </Button>
+              <span className="text-xl font-bold text-gray-900 hidden sm:inline">
+                NORNEX
+              </span>
             </Link>
 
-            {/* User Menu */}
-            <Button variant="ghost" size="icon">
-              <User className="w-5 h-5" />
-            </Button>
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-1" ref={dropdownRef}>
+              {navLinks.map((link) => (
+                <div key={link.href} className="relative">
+                  {link.megaDropdown || link.simpleDropdown ? (
+                    <button
+                      onClick={() => handleDropdownToggle(link.href)}
+                      onMouseEnter={() => setOpenDropdown(link.href)}
+                      className={`flex items-center space-x-1 px-4 py-2 text-sm font-medium transition-colors hover:text-blue-600 rounded-md hover:bg-gray-100 ${
+                        pathname === link.href || pathname.startsWith(link.href + "/")
+                          ? "text-blue-600"
+                          : "text-gray-700"
+                      }`}
+                      aria-expanded={openDropdown === link.href}
+                      aria-haspopup="true"
+                    >
+                      <span>{link.label}</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openDropdown === link.href ? "rotate-180" : ""}`} />
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className={`flex items-center px-4 py-2 text-sm font-medium transition-colors hover:text-blue-600 rounded-md hover:bg-gray-100 ${
+                        pathname === link.href
+                          ? "text-blue-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      <span>{link.label}</span>
+                    </Link>
+                  )}
+                  
+                  {/* Mega Dropdown for Services */}
+                  {link.megaDropdown && openDropdown === link.href && (
+                    <div 
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl py-6 px-6 z-50 animate-dropdown"
+                      style={{ width: "720px" }}
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      <div className="grid grid-cols-3 gap-6">
+                        {link.megaDropdown.map((column, idx) => (
+                          <div key={idx}>
+                            <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">
+                              {column.title}
+                            </h3>
+                            <ul className="space-y-1">
+                              {column.items.map((item) => (
+                                <li key={item.href}>
+                                  <Link
+                                    href={item.href}
+                                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors group"
+                                    onClick={() => setOpenDropdown(null)}
+                                  >
+                                    {item.icon && <item.icon className="w-4 h-4 text-gray-400 group-hover:text-blue-500" />}
+                                    <span>{item.label}</span>
+                                    {item.emoji && <span className="ml-1">{item.emoji}</span>}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Simple Dropdown */}
+                  {link.simpleDropdown && openDropdown === link.href && (
+                    <div 
+                      className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50 animate-dropdown"
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      {link.simpleDropdown.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          {item.icon && <item.icon className="w-4 h-4 text-gray-400" />}
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
 
-            {/* Mobile Menu Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </Button>
+            {/* Right Actions */}
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              {/* Search Button */}
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+                aria-label={language === "no" ? "Søk" : "Search"}
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+
+              {/* Cart */}
+              <Link href="/nettbutikk/handlekurv" className="relative">
+                <Button variant="ghost" size="icon" aria-label={language === "no" ? "Handlekurv" : "Shopping Cart"}>
+                  <ShoppingCart className="w-5 h-5" />
+                  {isMounted && itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">
+                      {itemCount > 99 ? "99+" : itemCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
+              {/* User Menu */}
+              <Button variant="ghost" size="icon" aria-label={language === "no" ? "Logg inn" : "Log in"}>
+                <User className="w-5 h-5" />
+              </Button>
+
+              {/* Mobile Menu Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? "Lukk meny" : "Åpne meny"}
+                aria-expanded={isMobileMenuOpen}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <nav className="lg:hidden py-4 border-t">
-            <div className="flex flex-col space-y-2">
+        <div 
+          className={`lg:hidden fixed inset-0 top-16 bg-white z-40 transition-transform duration-300 ease-in-out ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <nav className="h-full overflow-y-auto pb-20">
+            <div className="flex flex-col p-4 space-y-1">
               {navLinks.map((link) => (
-                <div key={link.href}>
-                  {link.dropdown ? (
+                <div key={link.href} className="border-b border-gray-100 last:border-0">
+                  {link.megaDropdown || link.simpleDropdown ? (
                     <>
                       <button
-                        onClick={() => handleDropdownToggle(link.href)}
-                        className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gray-100 rounded-md"
+                        onClick={() => handleMobileAccordion(link.href)}
+                        className="flex items-center justify-between w-full px-4 py-4 text-base font-medium text-gray-700 hover:text-blue-600"
+                        aria-expanded={mobileAccordion === link.href}
                       >
-                        <div className="flex items-center space-x-2">
-                          {link.icon && <link.icon className="w-4 h-4" />}
-                          <span>{link.label}</span>
-                        </div>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.href ? "rotate-180" : ""}`} />
+                        <span>{link.label}</span>
+                        <ChevronDown className={`w-5 h-5 transition-transform ${mobileAccordion === link.href ? "rotate-180" : ""}`} />
                       </button>
-                      {openDropdown === link.href && (
-                        <div className="ml-4 mt-1 space-y-1">
-                          {link.dropdown.map((item) => (
+                      
+                      {mobileAccordion === link.href && (
+                        <div className="pb-4 pl-4 space-y-1 animate-accordion">
+                          {link.megaDropdown && link.megaDropdown.map((column, idx) => (
+                            <div key={idx} className="mb-4">
+                              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 mb-2">
+                                {column.title}
+                              </h4>
+                              {column.items.map((item) => (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                                  onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    setMobileAccordion(null);
+                                  }}
+                                >
+                                  {item.icon && <item.icon className="w-5 h-5" />}
+                                  <span>{item.label}</span>
+                                  {item.emoji && <span>{item.emoji}</span>}
+                                </Link>
+                              ))}
+                            </div>
+                          ))}
+                          {link.simpleDropdown && link.simpleDropdown.map((item) => (
                             <Link
                               key={item.href}
                               href={item.href}
-                              className="flex items-center space-x-2 px-2 py-2 text-sm text-gray-600 hover:text-green-600 hover:bg-gray-100 rounded-md"
+                              className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
                               onClick={() => {
                                 setMobileMenuOpen(false);
-                                setOpenDropdown(null);
+                                setMobileAccordion(null);
                               }}
                             >
-                              {item.icon && <item.icon className="w-4 h-4" />}
+                              {item.icon && <item.icon className="w-5 h-5" />}
                               <span>{item.label}</span>
                             </Link>
                           ))}
@@ -278,28 +405,37 @@ export function Header() {
                   ) : (
                     <Link
                       href={link.href}
-                      className={`flex items-center space-x-2 px-2 py-2 text-sm font-medium transition-colors hover:text-green-600 hover:bg-gray-100 rounded-md ${
+                      className={`flex items-center px-4 py-4 text-base font-medium transition-colors ${
                         pathname === link.href
-                          ? "text-green-600"
-                          : "text-gray-700"
+                          ? "text-blue-600"
+                          : "text-gray-700 hover:text-blue-600"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      {link.icon && <link.icon className="w-4 h-4" />}
                       <span>{link.label}</span>
-                      {link.badge && (
-                        <Badge variant="success" className="text-[10px] px-1.5 py-0">
-                          {link.badge}
-                        </Badge>
-                      )}
                     </Link>
                   )}
                 </div>
               ))}
+              
+              {/* Mobile Action Buttons */}
+              <div className="pt-6 space-y-3 px-4">
+                <Link href="/kontakt" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    {language === "no" ? "Kontakt oss" : "Contact Us"}
+                  </Button>
+                </Link>
+              </div>
             </div>
           </nav>
-        )}
-      </div>
-    </header>
+        </div>
+      </header>
+      
+      {/* Spacer for fixed header */}
+      <div className="h-16" />
+      
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header, Footer } from "@/components/layout";
-import { CookieConsent, CustomerTypeModal } from "@/components/modals";
+import { Header, Footer, BackToTop } from "@/components/layout";
+import { CookieConsent } from "@/components/modals";
 
 export const metadata: Metadata = {
   title: "NORNEX - Profesjonelle IT-tjenester | Oslo, Norge",
@@ -108,8 +108,8 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <BackToTop />
         <CookieConsent />
-        <CustomerTypeModal />
       </body>
     </html>
   );

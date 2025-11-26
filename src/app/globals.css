@@ -237,3 +237,67 @@ body {
 .skip-link:focus {
   top: 0;
 }
+
+/* Dropdown animation */
+@keyframes dropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dropdown {
+  animation: dropdown 0.2s ease-out;
+}
+
+/* Mobile accordion animation */
+@keyframes accordion {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.animate-accordion {
+  animation: accordion 0.3s ease-out;
+}
+
+/* Search modal animation */
+@keyframes searchModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-search-modal {
+  animation: searchModal 0.2s ease-out;
+}
+
+/* Back to top button animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
