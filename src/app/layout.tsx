@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header, Footer } from "@/components/layout";
+import { Header, Footer, BackToTop } from "@/components/layout";
 import { CookieConsent, CustomerTypeModal } from "@/components/modals";
 
 export const metadata: Metadata = {
@@ -108,6 +108,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <BackToTop />
         <CookieConsent />
         <CustomerTypeModal />
       </body>
