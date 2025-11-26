@@ -1,0 +1,699 @@
+// NORNEX AS - Prisma Database Schema
+// @author NORNEX Development Team
+// @version 2.0.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTH MODELS
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+  isActive      Boolean   @default(true)
+  emailVerified DateTime?
+  image         String?
+  
+  // Customer specific
+  type          CustomerType @default(PRIVATE)
+  company       String?
+  orgNumber     String?
+  
+  // Address
+  address       String?
+  postalCode    String?
+  city          String?
+  country       String   @default("Norge")
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  orders          Order[]
+  repairs         Repair[]
+  sellbackSubmissions SellbackSubmission[]
+  contracts       Contract[]
+  supportTickets  SupportTicket[]
+  notifications   Notification[]
+  sessions        Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum CustomerType {
+  PRIVATE
+  BUSINESS
+}
+
+// ============================================
+// PRODUCT MODELS
+// ============================================
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  shortDesc   String?
+  
+  // Pricing
+  price       Float
+  comparePrice Float?
+  costPrice   Float?
+  
+  // Inventory
+  stock       Int      @default(0)
+  sku         String?  @unique
+  barcode     String?
+  
+  // Categorization
+  categoryId  String?
+  category    ProductCategory? @relation(fields: [categoryId], references: [id])
+  brand       String?
+  
+  // Specifications
+  processor   String?
+  ram         String?
+  storage     String?
+  displaySize String?
+  graphics    String?
+  os          String?
+  
+  // Condition
+  condition   ProductCondition @default(NEW)
+  
+  // Media
+  images      String[]
+  
+  // Status
+  status      ProductStatus @default(ACTIVE)
+  isFeatured  Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  orderItems  OrderItem[]
+}
+
+model ProductCategory {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  image       String?
+  parentId    String?
+  parent      ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    ProductCategory[] @relation("CategoryHierarchy")
+  products    Product[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ProductCondition {
+  NEW
+  REFURBISHED
+  USED
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+// ============================================
+// ORDER MODELS
+// ============================================
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  
+  // Customer
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  
+  // Shipping
+  shippingName    String
+  shippingEmail   String
+  shippingPhone   String
+  shippingAddress String
+  shippingPostal  String
+  shippingCity    String
+  shippingMethod  String?
+  
+  // Payment
+  paymentMethod   String?
+  paymentStatus   PaymentStatus @default(PENDING)
+  
+  // Pricing
+  subtotal      Float
+  shippingCost  Float    @default(0)
+  discountAmount Float   @default(0)
+  vatAmount     Float    @default(0)
+  total         Float
+  
+  // Discount
+  discountId    String?
+  discount      DiscountCode? @relation(fields: [discountId], references: [id])
+  
+  // Status
+  status        OrderStatus @default(PENDING)
+  notes         String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  items         OrderItem[]
+  shipment      Shipment?
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  name        String
+  price       Float
+  quantity    Int
+  total       Float
+  
+  createdAt   DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// REPAIR MODELS
+// ============================================
+
+model Repair {
+  id            String   @id @default(cuid())
+  repairNumber  String   @unique
+  
+  // Customer
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  
+  // Contact (for non-registered customers)
+  customerName  String
+  customerEmail String
+  customerPhone String
+  
+  // Device
+  deviceType    String
+  deviceBrand   String?
+  deviceModel   String?
+  serialNumber  String?
+  
+  // Problem
+  problemCategory String
+  problemDesc   String
+  
+  // Status
+  status        RepairStatus @default(RECEIVED)
+  
+  // Diagnosis
+  diagnosis     String?
+  estimatedCost Float?
+  actualCost    Float?
+  partsUsed     String?
+  
+  // Dates
+  receivedAt    DateTime @default(now())
+  diagnosedAt   DateTime?
+  repairedAt    DateTime?
+  deliveredAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum RepairStatus {
+  RECEIVED
+  DIAGNOSING
+  WAITING_APPROVAL
+  WAITING_PARTS
+  IN_PROGRESS
+  TESTING
+  COMPLETED
+  DELIVERED
+  CANCELLED
+}
+
+// ============================================
+// SELLBACK MODELS
+// ============================================
+
+model SellbackSubmission {
+  id            String   @id @default(cuid())
+  
+  // Customer
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  
+  // Contact
+  customerName  String
+  customerEmail String
+  customerPhone String
+  customerAddress String?
+  
+  // Submission type
+  type          SellbackType @default(SELL)
+  
+  // Device info (JSON for flexibility)
+  devices       Json
+  
+  // Valuation
+  estimatedValue Float
+  finalValue    Float?
+  
+  // Status
+  status        SellbackStatus @default(PENDING)
+  notes         String?
+  
+  // Trade-in specific
+  newProductId  String?
+  tradeInDiscount Float?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum SellbackType {
+  SELL
+  TRADE_IN
+}
+
+enum SellbackStatus {
+  PENDING
+  REVIEWING
+  OFFER_SENT
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+// ============================================
+// CONTRACT MODELS
+// ============================================
+
+model Contract {
+  id            String   @id @default(cuid())
+  contractNumber String  @unique
+  
+  // Customer
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  
+  // Contract details
+  name          String
+  type          ContractType
+  description   String?
+  
+  // Terms
+  startDate     DateTime
+  endDate       DateTime
+  autoRenew     Boolean  @default(false)
+  
+  // Pricing
+  monthlyFee    Float
+  setupFee      Float    @default(0)
+  
+  // Status
+  status        ContractStatus @default(ACTIVE)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum ContractType {
+  MANAGED_IT
+  SUPPORT
+  SECURITY
+  CLOUD
+  CUSTOM
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  EXPIRED
+  CANCELLED
+}
+
+// ============================================
+// BLOG MODELS
+// ============================================
+
+model BlogPost {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  excerpt       String?
+  content       String
+  featuredImage String?
+  
+  // Author
+  authorId      String?
+  authorName    String   @default("NORNEX")
+  
+  // Categorization
+  categoryId    String?
+  category      BlogCategory? @relation(fields: [categoryId], references: [id])
+  
+  // SEO
+  metaTitle     String?
+  metaDesc      String?
+  
+  // Status
+  status        PostStatus @default(DRAFT)
+  publishedAt   DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  tags          BlogPostTag[]
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  
+  posts       BlogPost[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogTag {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  
+  posts       BlogPostTag[]
+  
+  createdAt   DateTime @default(now())
+}
+
+model BlogPostTag {
+  postId      String
+  post        BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tagId       String
+  tag         BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([postId, tagId])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ============================================
+// NEWSLETTER MODELS
+// ============================================
+
+model NewsletterSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  isActive    Boolean  @default(true)
+  
+  subscribedAt  DateTime @default(now())
+  unsubscribedAt DateTime?
+}
+
+// ============================================
+// EMAIL TEMPLATE MODELS
+// ============================================
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  subject     String
+  content     String
+  type        EmailType
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum EmailType {
+  ORDER_CONFIRMATION
+  ORDER_SHIPPED
+  ORDER_DELIVERED
+  REPAIR_RECEIVED
+  REPAIR_DIAGNOSIS
+  REPAIR_COMPLETED
+  NEWSLETTER_WELCOME
+  PASSWORD_RESET
+  CUSTOM
+}
+
+// ============================================
+// SOCIAL MEDIA & PARTNERS
+// ============================================
+
+model SocialMedia {
+  id          String   @id @default(cuid())
+  platform    String   @unique
+  url         String
+  icon        String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Partner {
+  id          String   @id @default(cuid())
+  name        String
+  logo        String?
+  url         String?
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// API INTEGRATIONS
+// ============================================
+
+model ApiIntegration {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  provider    String
+  apiKey      String?
+  apiSecret   String?
+  baseUrl     String?
+  config      Json?
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// SEO MODELS
+// ============================================
+
+model SeoMeta {
+  id          String   @id @default(cuid())
+  page        String   @unique
+  title       String
+  description String?
+  keywords    String[]
+  ogImage     String?
+  canonical   String?
+  noIndex     Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// DISCOUNT CODES
+// ============================================
+
+model DiscountCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  type        DiscountType
+  value       Float
+  description String?
+  
+  // Limits
+  minOrderValue Float?
+  maxUses     Int?
+  usedCount   Int      @default(0)
+  
+  // Validity
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  orders      Order[]
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+  FREE_SHIPPING
+}
+
+// ============================================
+// SHIPPING
+// ============================================
+
+model Shipment {
+  id              String   @id @default(cuid())
+  orderId         String   @unique
+  order           Order    @relation(fields: [orderId], references: [id])
+  
+  carrier         String
+  trackingNumber  String?
+  trackingUrl     String?
+  
+  status          ShipmentStatus @default(PENDING)
+  
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum ShipmentStatus {
+  PENDING
+  LABEL_CREATED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RETURNED
+}
+
+// ============================================
+// SUPPORT TICKETS
+// ============================================
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  ticketNumber String  @unique
+  
+  // Customer
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  // Contact (for non-registered)
+  email       String
+  name        String
+  
+  // Ticket
+  subject     String
+  message     String
+  category    String?
+  priority    TicketPriority @default(NORMAL)
+  status      TicketStatus   @default(OPEN)
+  
+  // Resolution
+  assignedTo  String?
+  resolvedAt  DateTime?
+  resolution  String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        String
+  title       String
+  message     String
+  link        String?
+  isRead      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+}
