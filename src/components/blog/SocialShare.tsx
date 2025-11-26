@@ -54,9 +54,24 @@ export default function SocialShare({ url, title, description = '' }: SocialShar
     },
   ];
   
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(url);
-    // Could add toast notification here
+  const copyToClipboard = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
   };
   
   return (

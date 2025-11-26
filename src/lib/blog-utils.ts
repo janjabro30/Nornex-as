@@ -16,6 +16,12 @@ export function calculateReadingTime(content: string): number {
  */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
+  
+  // Validate date
+  if (isNaN(date.getTime())) {
+    return 'Ukjent dato';
+  }
+  
   const months = [
     'januar', 'februar', 'mars', 'april', 'mai', 'juni',
     'juli', 'august', 'september', 'oktober', 'november', 'desember'
@@ -28,6 +34,12 @@ export function formatDate(dateString: string): string {
  */
 export function formatRelativeDate(dateString: string): string {
   const date = new Date(dateString);
+  
+  // Validate date
+  if (isNaN(date.getTime())) {
+    return 'Ukjent dato';
+  }
+  
   const now = new Date();
   const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
   

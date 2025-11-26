@@ -491,9 +491,22 @@ function PostEditorModal({ post, onClose, onSave }: PostEditorModalProps) {
     const category = blogCategories.find(c => c.id === formData.categoryId)!;
     const author = blogAuthors.find(a => a.id === formData.authorId)!;
     
+    // Helper function to generate slug with Norwegian character support
+    const generateSlugFromTitle = (title: string): string => {
+      return title
+        .toLowerCase()
+        .replace(/æ/g, 'ae')
+        .replace(/ø/g, 'o')
+        .replace(/å/g, 'a')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+    };
+    
     const savedPost: BlogPost = {
       id: post?.id || Date.now(),
-      slug: post?.slug || formData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+      slug: post?.slug || generateSlugFromTitle(formData.title),
       title: formData.title,
       excerpt: formData.excerpt,
       content: formData.content,
