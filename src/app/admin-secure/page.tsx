@@ -12,6 +12,8 @@ import {
   FileText,
   Share2,
   BarChart3,
+  Tag,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,10 +43,19 @@ export default function AdminDashboard() {
     },
     {
       title: "Products",
-      description: "Manage product catalog and inventory",
+      description: "Manage catalog with AI-powered spec auto-fill",
       icon: Package,
       href: "/admin-secure/products",
       badge: "Shop",
+      isNew: true,
+    },
+    {
+      title: "Discount Codes",
+      description: "Create and manage promotional discount codes",
+      icon: Tag,
+      href: "/admin-secure/discounts",
+      badge: "Shop",
+      isNew: true,
     },
     {
       title: "Orders",
@@ -134,7 +145,13 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminModules.map((module, index) => (
             <Link key={index} href={module.href}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full relative">
+                {(module as typeof module & { isNew?: boolean }).isNew && (
+                  <Badge className="absolute -top-2 -right-2 bg-purple-600">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    NEW
+                  </Badge>
+                )}
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <module.icon className="w-8 h-8 text-green-600" />

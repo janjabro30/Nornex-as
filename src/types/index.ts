@@ -192,15 +192,99 @@ export interface Certification {
   isActive: boolean;
 }
 
+// Extended Filter Types for Phase 5
+export type ProcessorType = 
+  | "intel-i3" | "intel-i5" | "intel-i7" | "intel-i9"
+  | "amd-ryzen-3" | "amd-ryzen-5" | "amd-ryzen-7" | "amd-ryzen-9"
+  | "apple-m1" | "apple-m2" | "apple-m3";
+
+export type RamSize = "4" | "8" | "16" | "32" | "64" | "128";
+
+export type StorageSize = "128" | "256" | "512" | "1024" | "2048" | "4096";
+
+export type ScreenSize = "under-13" | "13-14" | "15-16" | "17-plus";
+
+export type ScreenResolution = "fhd" | "2k" | "4k" | "5k";
+
+export type GraphicsType = "integrated" | "nvidia-gtx" | "nvidia-rtx" | "amd-radeon" | "apple-gpu";
+
+export type OperatingSystem = "windows-11" | "windows-10" | "macos" | "linux" | "chromeos" | "no-os";
+
+export type ConditionType = "new" | "refurbished-a" | "refurbished-b" | "used";
+
+export type SortOption = 
+  | "newest" | "price-low" | "price-high" 
+  | "name-asc" | "name-desc" | "popular" | "rating";
+
+export type ViewMode = "grid" | "list";
+
 // Filter Types
 export interface ProductFilters {
   category?: ProductCategory;
   grade?: ProductGrade;
   brand?: string;
+  brands?: string[];
   minPrice?: number;
   maxPrice?: number;
   search?: string;
   inStock?: boolean;
+  processors?: ProcessorType[];
+  ramSizes?: RamSize[];
+  storageSizes?: StorageSize[];
+  screenSizes?: ScreenSize[];
+  screenResolutions?: ScreenResolution[];
+  graphics?: GraphicsType[];
+  operatingSystems?: OperatingSystem[];
+  conditions?: ConditionType[];
+  sortBy?: SortOption;
+  viewMode?: ViewMode;
+  page?: number;
+  perPage?: number;
+}
+
+// Discount Code Types
+export type DiscountType = "percentage" | "fixed";
+
+export interface DiscountCode {
+  id: string;
+  code: string;
+  type: DiscountType;
+  value: number;
+  minOrderAmount?: number;
+  maxUses?: number;
+  currentUses: number;
+  validFrom: Date;
+  validUntil: Date;
+  isActive: boolean;
+  createdAt: Date;
+}
+
+// Checkout Types
+export type DeliveryMethod = "home" | "pickup" | "express" | "free";
+export type PaymentMethod = "vipps" | "credit-card" | "invoice" | "klarna" | "paypal";
+
+export interface DeliveryInfo {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  useDifferentBilling: boolean;
+  billingAddress?: string;
+  billingPostalCode?: string;
+  billingCity?: string;
+  saveAddress: boolean;
+}
+
+export interface CheckoutState {
+  step: 1 | 2 | 3;
+  deliveryInfo: DeliveryInfo | null;
+  deliveryMethod: DeliveryMethod | null;
+  paymentMethod: PaymentMethod | null;
+  discountCode: string | null;
+  discountAmount: number;
+  acceptTerms: boolean;
 }
 
 // API Response Types
