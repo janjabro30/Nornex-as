@@ -146,8 +146,7 @@ Brynsveien 18
 E-post: privacy@nornex.no
 Telefon: +47 123 45 678
 
-Personvernombud: Jan Jabro
-E-post: dpo@nornex.no
+E-post til personvernombud: dpo@nornex.no
 
 Du kan også klage til Datatilsynet hvis du mener vi ikke behandler dine data i samsvar med regelverket.`
           : `For privacy questions, contact us:
@@ -159,8 +158,7 @@ Brynsveien 18
 Email: privacy@nornex.no
 Phone: +47 123 45 678
 
-Data Protection Officer: Jan Jabro
-Email: dpo@nornex.no
+Email for Data Protection Officer: dpo@nornex.no
 
 You can also complain to the Norwegian Data Protection Authority (Datatilsynet) if you believe we are not processing your data in accordance with regulations.`,
     },

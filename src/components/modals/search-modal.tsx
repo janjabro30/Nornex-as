@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, X, ArrowRight, Loader2, Server, Globe, Smartphone, Wrench, Package, FileText } from "lucide-react";
 import { useAppStore } from "@/store";
 
@@ -49,6 +50,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const { language } = useAppStore();
 
   // Group results by type
@@ -119,7 +121,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       e.preventDefault();
       setSelectedIndex((prev) => Math.max(prev - 1, 0));
     } else if (e.key === "Enter" && flatResults[selectedIndex]) {
-      window.location.href = flatResults[selectedIndex].href;
+      router.push(flatResults[selectedIndex].href);
       onClose();
     } else if (e.key === "Escape") {
       onClose();

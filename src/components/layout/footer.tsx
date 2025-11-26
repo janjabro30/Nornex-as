@@ -52,7 +52,7 @@ export function Footer() {
       const response = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, gdprConsent }),
       });
 
       if (response.ok) {

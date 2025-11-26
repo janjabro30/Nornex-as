@@ -59,12 +59,12 @@ interface NavLink {
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
   const pathname = usePathname();
   const { language, isMobileMenuOpen, setMobileMenuOpen } = useAppStore();
   const { items } = useCartStore();
@@ -73,15 +73,15 @@ export function Header() {
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
     
-    if (currentScrollY > lastScrollY && currentScrollY > 100) {
+    if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
       setIsVisible(false);
     } else {
       setIsVisible(true);
     }
     
     setIsScrolled(currentScrollY > 10);
-    setLastScrollY(currentScrollY);
-  }, [lastScrollY]);
+    lastScrollYRef.current = currentScrollY;
+  }, []);
 
   useEffect(() => {
     Promise.resolve().then(() => setIsMounted(true));
@@ -306,7 +306,7 @@ export function Header() {
 
               {/* Cart */}
               <Link href="/nettbutikk/handlekurv" className="relative">
-                <Button variant="ghost" size="icon" className="relative" aria-label={language === "no" ? "Handlekurv" : "Shopping Cart"}>
+                <Button variant="ghost" size="icon" aria-label={language === "no" ? "Handlekurv" : "Shopping Cart"}>
                   <ShoppingCart className="w-5 h-5" />
                   {isMounted && itemCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center">

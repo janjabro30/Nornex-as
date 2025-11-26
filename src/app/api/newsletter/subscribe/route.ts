@@ -3,12 +3,20 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email } = body;
+    const { email, gdprConsent } = body;
 
     // Validate email
     if (!email || !email.includes("@")) {
       return NextResponse.json(
         { error: "Invalid email address" },
+        { status: 400 }
+      );
+    }
+
+    // Validate GDPR consent
+    if (!gdprConsent) {
+      return NextResponse.json(
+        { error: "GDPR consent is required" },
         { status: 400 }
       );
     }
@@ -19,11 +27,12 @@ export async function POST(request: NextRequest) {
     //     email,
     //     subscribedAt: new Date(),
     //     isActive: true,
+    //     gdprConsentAt: new Date(),
     //   },
     // });
 
     // For now, just log and return success
-    console.log("Newsletter subscription:", email);
+    console.log("Newsletter subscription:", { email, gdprConsent, consentAt: new Date().toISOString() });
 
     return NextResponse.json(
       { 

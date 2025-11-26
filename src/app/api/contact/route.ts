@@ -8,12 +8,13 @@ interface ContactFormData {
   service: string;
   message: string;
   budget?: string;
+  gdprConsent?: boolean;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ContactFormData = await request.json();
-    const { name, email, phone, company, service, message, budget } = body;
+    const { name, email, phone, company, service, message, budget, gdprConsent } = body;
 
     // Validate required fields
     if (!name || !email || !service || !message) {
@@ -31,6 +32,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate GDPR consent
+    if (!gdprConsent) {
+      return NextResponse.json(
+        { error: "GDPR consent is required" },
+        { status: 400 }
+      );
+    }
+
     // In production, this would:
     // 1. Save to database
     // await prisma.contactSubmission.create({
@@ -41,6 +50,7 @@ export async function POST(request: NextRequest) {
     //     company,
     //     service,
     //     message,
+    //     gdprConsentAt: new Date(),
     //     submittedAt: new Date(),
     //   },
     // });
@@ -61,6 +71,7 @@ export async function POST(request: NextRequest) {
       service,
       message,
       budget,
+      gdprConsent,
       submittedAt: new Date().toISOString(),
     });
 
