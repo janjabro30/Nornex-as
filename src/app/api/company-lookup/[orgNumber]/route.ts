@@ -5,7 +5,7 @@ import type { BronnysundCompanyData } from '@/types/portal';
 const BRREG_API_URL = 'https://data.brreg.no/enhetsregisteret/api/enheter';
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ orgNumber: string }> }
 ) {
   try {

@@ -97,7 +97,8 @@ function RegisterForm() {
     setLookupSuccess(false);
 
     try {
-      const response = await fetch(`/api/company-lookup/${orgNumber.replace(/\s/g, "")}`);
+      const cleanedOrgNumber = orgNumber.replace(/\s/g, "");
+      const response = await fetch(`/api/company-lookup/${encodeURIComponent(cleanedOrgNumber)}`);
       
       if (!response.ok) {
         const errorData = await response.json();

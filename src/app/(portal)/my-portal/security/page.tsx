@@ -59,9 +59,9 @@ export default function SecurityPage() {
     setPasswordChangePIN(mockPIN);
     setPendingPasswordChange(true);
 
-    // For demo, show the PIN in console
-    console.log("Demo PIN:", mockPIN);
-    alert(`Demo: PIN sendt til ${user?.email}\n\nPIN for testing: ${mockPIN}`);
+    // For demo purposes only - in production, PIN would be sent via email
+    // eslint-disable-next-line no-console
+    console.log("Demo PIN (remove in production):", mockPIN);
 
     setPasswordStep("verify");
     setIsChangingPassword(false);
