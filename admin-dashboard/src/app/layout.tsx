@@ -1,5 +1,5 @@
 /**
- * NORNEX AS - Admin Dashboard Root Layout
+ * NORNEX AS - Root Layout
  * @author NORNEX Development Team
  * @version 2.0.0
  * @copyright 2025 NORNEX AS
@@ -8,6 +8,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { COMPANY_INFO, SEO_DEFAULTS } from "@/lib/constants";
+import { CartProvider } from "@/components/public/CartProvider";
 
 export const metadata: Metadata = {
   title: SEO_DEFAULTS.title,
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   creator: COMPANY_INFO.name,
   publisher: COMPANY_INFO.name,
   openGraph: {
-    title: "NORNEX AS - Admin Dashboard",
+    title: "NORNEX AS - Profesjonelle IT-tjenester i Oslo",
     description: SEO_DEFAULTS.description,
     type: "website",
     locale: "nb_NO",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   other: {
-    "application-name": "NORNEX Admin",
+    "application-name": "NORNEX AS",
   },
 };
 
@@ -54,15 +55,17 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="nb">
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className="font-sans antialiased bg-slate-50">
-        {children}
+      <body className="font-sans antialiased bg-white">
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
