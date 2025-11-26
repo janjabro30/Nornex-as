@@ -85,7 +85,7 @@ export const servicesData: ServiceData[] = [
       { step: 1, title: 'Sikkerhetsrevisjon', description: 'Kartlegger sårbarheter i din infrastruktur' },
       { step: 2, title: 'Risikovurdering', description: 'Prioriterer tiltak basert på risiko' },
       { step: 3, title: 'Implementering', description: 'Installerer og konfigurerer sikkerhetstiltak' },
-      { step: 4, title: 'Overvåking', description: 'Kontinuerlig sikkerhetsvervåking og hendelseshåndtering' },
+      { step: 4, title: 'Overvåking', description: 'Kontinuerlig sikkerhetsovervåking og hendelseshåndtering' },
     ],
     pricing: [
       {

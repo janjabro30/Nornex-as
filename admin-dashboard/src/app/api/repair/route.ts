@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate repair ID
-  const repairId = `REP-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const repairId = `REP-${Date.now()}-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 
   // In production, this would:
   // 1. Create repair ticket in database

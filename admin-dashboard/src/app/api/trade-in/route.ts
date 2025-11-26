@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Generate trade-in ID
-  const tradeInId = `TRD-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  // Generate trade-in ID using crypto for better security
+  const tradeInId = `TRD-${Date.now()}-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 
   return NextResponse.json({
     success: true,

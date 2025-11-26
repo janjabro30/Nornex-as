@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate user ID
-  const userId = `usr-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const userId = `usr-${Date.now()}-${crypto.randomUUID().substring(0, 8)}`;
 
   return NextResponse.json({
     success: true,

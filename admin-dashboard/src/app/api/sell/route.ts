@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate sellback ID
-  const sellbackId = `SELL-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const sellbackId = `SELL-${Date.now()}-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 
   return NextResponse.json({
     success: true,

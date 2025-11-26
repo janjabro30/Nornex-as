@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate order ID
-  const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const orderId = `ORD-${Date.now()}-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 
   // In production, this would:
   // 1. Create order in database
