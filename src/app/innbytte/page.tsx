@@ -21,6 +21,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/store";
 import { formatPrice } from "@/lib/utils";
+import {
+  BRANDS,
+  TRADE_IN_CONDITIONS,
+  AGE_OPTIONS,
+  TRADE_IN_BASE_VALUES,
+  CONDITION_MULTIPLIERS,
+  AGE_MULTIPLIERS,
+} from "@/lib/constants/form-options";
 
 interface TradeInFormData {
   // Step 1: Device info
@@ -60,33 +68,6 @@ const initialFormData: TradeInFormData = {
   city: "",
   paymentMethod: "card",
   acceptTerms: false,
-};
-
-// Base trade-in values
-const tradeInBaseValues: Record<string, number> = {
-  laptop: 3000,
-  desktop: 2000,
-  tablet: 1500,
-  telefon: 2500,
-  skjerm: 800,
-  annet: 500,
-};
-
-// Condition multipliers
-const conditionMultipliers: Record<string, number> = {
-  perfekt: 0.8,
-  god: 0.6,
-  akseptabel: 0.4,
-  defekt: 0.15,
-};
-
-// Age multipliers
-const ageMultipliers: Record<string, number> = {
-  "under-1": 1.0,
-  "1-2": 0.8,
-  "2-3": 0.6,
-  "3-5": 0.4,
-  "over-5": 0.2,
 };
 
 // Sample new devices for trade-in
@@ -158,52 +139,6 @@ export default function TradeInPage() {
     { value: "annet", label: "Annet" },
   ];
 
-  const brands = [
-    "Apple",
-    "Dell",
-    "HP",
-    "Lenovo",
-    "Samsung",
-    "Asus",
-    "Acer",
-    "Microsoft",
-    "Huawei",
-    "Sony",
-    "LG",
-    "Annet",
-  ];
-
-  const conditions = [
-    {
-      value: "perfekt",
-      label: "Perfekt",
-      description: "Fungerer perfekt, ingen skader",
-    },
-    {
-      value: "god",
-      label: "God",
-      description: "Minimale bruksspor, fungerer perfekt",
-    },
-    {
-      value: "akseptabel",
-      label: "Akseptabel",
-      description: "Synlige bruksspor, fungerer som den skal",
-    },
-    {
-      value: "defekt",
-      label: "Defekt",
-      description: "Har funksjonsfeil",
-    },
-  ];
-
-  const ageOptions = [
-    { value: "under-1", label: "Mindre enn 1 år" },
-    { value: "1-2", label: "1-2 år" },
-    { value: "2-3", label: "2-3 år" },
-    { value: "3-5", label: "3-5 år" },
-    { value: "over-5", label: "Over 5 år" },
-  ];
-
   const accessoryOptions = [
     { value: "emballasje", label: "Original emballasje" },
     { value: "lader", label: "Lader" },
@@ -212,9 +147,9 @@ export default function TradeInPage() {
   ];
 
   const calculateTradeInValue = (): number => {
-    const baseValue = tradeInBaseValues[formData.deviceType] || 500;
-    const conditionMult = conditionMultipliers[formData.condition] || 0.5;
-    const ageMult = ageMultipliers[formData.age] || 0.5;
+    const baseValue = TRADE_IN_BASE_VALUES[formData.deviceType] || 500;
+    const conditionMult = CONDITION_MULTIPLIERS[formData.condition] || 0.5;
+    const ageMult = AGE_MULTIPLIERS[formData.age] || 0.5;
     const accessoryBonus = formData.accessories.length * 100;
     return Math.round(baseValue * conditionMult * ageMult + accessoryBonus);
   };
@@ -566,7 +501,7 @@ export default function TradeInPage() {
                             className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                           >
                             <option value="">Velg merke</option>
-                            {brands.map((brand) => (
+                            {BRANDS.map((brand) => (
                               <option key={brand} value={brand}>
                                 {brand}
                               </option>
@@ -599,7 +534,7 @@ export default function TradeInPage() {
                             Tilstand *
                           </label>
                           <div className="space-y-2">
-                            {conditions.map((condition) => (
+                            {TRADE_IN_CONDITIONS.map((condition) => (
                               <label
                                 key={condition.value}
                                 className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all ${
@@ -655,7 +590,7 @@ export default function TradeInPage() {
                             className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                           >
                             <option value="">Velg alder</option>
-                            {ageOptions.map((opt) => (
+                            {AGE_OPTIONS.map((opt) => (
                               <option key={opt.value} value={opt.value}>
                                 {opt.label}
                               </option>
@@ -781,7 +716,7 @@ export default function TradeInPage() {
                             <div>
                               <p className="font-medium">{formData.brand} {formData.model}</p>
                               <p className="text-sm text-gray-500">
-                                {conditions.find((c) => c.value === formData.condition)?.label} tilstand
+                                {TRADE_IN_CONDITIONS.find((c) => c.value === formData.condition)?.label} tilstand
                               </p>
                             </div>
                             <p className="text-lg font-semibold text-green-600">

@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/store";
+import { BRANDS, REPAIR_TYPES } from "@/lib/constants/form-options";
 
 interface RepairFormData {
   deviceType: string;
@@ -87,20 +88,6 @@ export default function RepairPage() {
     { value: "telefon", label: "Telefon", icon: Smartphone },
     { value: "skjerm", label: "Skjerm", icon: Monitor },
     { value: "annet", label: "Annet", icon: Wrench },
-  ];
-
-  const repairTypes = [
-    { value: "skjermbytte", label: "Skjermbytte" },
-    { value: "batteribytte", label: "Batteribytte" },
-    { value: "vannskade", label: "Vannskade" },
-    { value: "programvare", label: "Programvareproblemer" },
-    { value: "tastaturbytte", label: "Tastaturbytte" },
-    { value: "annet", label: "Annet" },
-  ];
-
-  const brands = [
-    "Apple", "Dell", "HP", "Lenovo", "Samsung", "Asus", 
-    "Acer", "Microsoft", "Huawei", "Sony", "LG", "Annet",
   ];
 
   const getEstimatedTime = () => {
@@ -349,7 +336,7 @@ export default function RepairPage() {
                             className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                           >
                             <option value="">Velg merke</option>
-                            {brands.map((brand) => (
+                            {BRANDS.map((brand) => (
                               <option key={brand} value={brand}>{brand}</option>
                             ))}
                           </select>
@@ -428,7 +415,7 @@ export default function RepairPage() {
                             className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                           >
                             <option value="">Velg reparasjonstype</option>
-                            {repairTypes.map((type) => (
+                            {REPAIR_TYPES.map((type) => (
                               <option key={type.value} value={type.value}>{type.label}</option>
                             ))}
                           </select>
@@ -629,7 +616,7 @@ export default function RepairPage() {
                             </div>
                             <div className="flex justify-between">
                               <dt className="text-gray-500">Reparasjonstype:</dt>
-                              <dd className="text-gray-900">{repairTypes.find((t) => t.value === formData.repairType)?.label}</dd>
+                              <dd className="text-gray-900">{REPAIR_TYPES.find((t) => t.value === formData.repairType)?.label}</dd>
                             </div>
                           </dl>
                         </div>

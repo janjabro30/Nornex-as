@@ -47,8 +47,14 @@ export async function POST(request: NextRequest) {
       city: body.city,
     };
 
-    // Log for demonstration
-    console.log("Repair request received:", repairRequest);
+    // Log for demonstration (without sensitive data)
+    console.log("Repair request received:", {
+      confirmationNumber,
+      deviceType: body.deviceType,
+      brand: body.brand,
+      urgency: body.urgency,
+      createdAt: repairRequest.createdAt,
+    });
 
     return NextResponse.json({
       success: true,

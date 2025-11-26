@@ -42,8 +42,12 @@ export async function POST(request: NextRequest) {
       city: body.city,
     };
 
-    // Log for demonstration
-    console.log("Sell request received:", sellRequest);
+    // Log for demonstration (without sensitive data)
+    console.log("Sell request received:", {
+      confirmationNumber,
+      totalDevices,
+      createdAt: sellRequest.createdAt,
+    });
 
     return NextResponse.json({
       success: true,

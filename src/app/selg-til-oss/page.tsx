@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/store";
+import { DEVICE_TYPES, BRANDS, CONDITIONS, ACCESSORY_OPTIONS } from "@/lib/constants/form-options";
 
 interface DeviceEntry {
   id: string;
@@ -43,7 +44,7 @@ interface SellFormData {
 }
 
 const createEmptyDevice = (): DeviceEntry => ({
-  id: Math.random().toString(36).substring(7),
+  id: crypto.randomUUID(),
   deviceType: "",
   brand: "",
   model: "",
@@ -71,39 +72,6 @@ export default function SellToUsPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [confirmationNumber, setConfirmationNumber] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const deviceTypes = [
-    { value: "laptop", label: "Laptop" },
-    { value: "desktop", label: "Desktop" },
-    { value: "tablet", label: "Nettbrett" },
-    { value: "telefon", label: "Telefon" },
-    { value: "skjerm", label: "Skjerm" },
-    { value: "server", label: "Server" },
-    { value: "nettverksutstyr", label: "Nettverksutstyr" },
-    { value: "annet", label: "Annet" },
-  ];
-
-  const conditions = [
-    { value: "perfekt", label: "Perfekt stand (ingen bruksspor)" },
-    { value: "god", label: "God stand (små bruksspor)" },
-    { value: "akseptabel", label: "Akseptabel stand (synlige bruksspor)" },
-    { value: "defekt", label: "Defekt (har feil)" },
-  ];
-
-  const accessoryOptions = [
-    { value: "emballasje", label: "Original emballasje" },
-    { value: "lader", label: "Lader" },
-    { value: "kabler", label: "Kabler" },
-    { value: "mus", label: "Mus" },
-    { value: "tastatur", label: "Tastatur" },
-    { value: "dokkingstasjon", label: "Dokkingstasjon" },
-    { value: "manualer", label: "Manualer/dokumentasjon" },
-  ];
-
-  const brands = [
-    "Apple", "Dell", "HP", "Lenovo", "Samsung", "Cisco",
-    "Asus", "Acer", "Microsoft", "Huawei", "Sony", "LG", "Annet",
-  ];
 
   const getTotalDeviceCount = () => {
     return formData.devices.reduce((sum, device) => sum + (device.quantity || 0), 0);
@@ -339,7 +307,7 @@ export default function SellToUsPage() {
                               className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                             >
                               <option value="">Velg type</option>
-                              {deviceTypes.map((type) => (
+                              {DEVICE_TYPES.map((type) => (
                                 <option key={type.value} value={type.value}>{type.label}</option>
                               ))}
                             </select>
@@ -359,7 +327,7 @@ export default function SellToUsPage() {
                               className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                             >
                               <option value="">Velg merke</option>
-                              {brands.map((brand) => (
+                              {BRANDS.map((brand) => (
                                 <option key={brand} value={brand}>{brand}</option>
                               ))}
                             </select>
@@ -421,7 +389,7 @@ export default function SellToUsPage() {
                               className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
                             >
                               <option value="">Velg tilstand</option>
-                              {conditions.map((cond) => (
+                              {CONDITIONS.map((cond) => (
                                 <option key={cond.value} value={cond.value}>{cond.label}</option>
                               ))}
                             </select>
@@ -437,7 +405,7 @@ export default function SellToUsPage() {
                             Inkludert tilbehør
                           </label>
                           <div className="flex flex-wrap gap-2">
-                            {accessoryOptions.map((acc) => (
+                            {ACCESSORY_OPTIONS.map((acc) => (
                               <button
                                 key={acc.value}
                                 type="button"

@@ -44,8 +44,13 @@ export async function POST(request: NextRequest) {
       paymentMethod: body.paymentMethod,
     };
 
-    // Log for demonstration (in production, would save to DB and send emails)
-    console.log("Trade-in request received:", tradeInRequest);
+    // Log for demonstration (without sensitive data)
+    console.log("Trade-in request received:", {
+      confirmationNumber,
+      deviceType: body.deviceType,
+      brand: body.brand,
+      createdAt: tradeInRequest.createdAt,
+    });
 
     return NextResponse.json({
       success: true,
