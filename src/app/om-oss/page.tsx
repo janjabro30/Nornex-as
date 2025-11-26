@@ -16,8 +16,10 @@ import {
   Shield,
   Globe,
   ArrowRight,
+  Code,
+  Smartphone,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAppStore } from "@/store";
@@ -39,8 +41,8 @@ export default function AboutPage() {
       title: language === "no" ? "Kvalitet" : "Quality",
       description:
         language === "no"
-          ? "Alle våre produkter gjennomgår grundig testing og kvalitetskontroll. Vi garanterer høy standard på alt vi selger."
-          : "All our products undergo thorough testing and quality control. We guarantee high standards on everything we sell.",
+          ? "Alle våre produkter og tjenester gjennomgår grundig kvalitetskontroll. Vi garanterer høy standard."
+          : "All our products and services undergo thorough quality control. We guarantee high standards.",
     },
     {
       icon: Heart,
@@ -51,12 +53,12 @@ export default function AboutPage() {
           : "We put the customer at the center and strive to deliver outstanding service and support.",
     },
     {
-      icon: Globe,
+      icon: Code,
       title: language === "no" ? "Innovasjon" : "Innovation",
       description:
         language === "no"
-          ? "Vi utvikler kontinuerlig våre tjenester og prosesser for å møte fremtidens behov."
-          : "We continuously develop our services and processes to meet future needs.",
+          ? "Vi utvikler kontinuerlig våre digitale tjenester med de nyeste teknologiene og rammeverkene."
+          : "We continuously develop our digital services with the latest technologies and frameworks.",
     },
   ];
 
@@ -66,8 +68,8 @@ export default function AboutPage() {
       label: language === "no" ? "Enheter resirkulert" : "Devices recycled",
     },
     {
-      value: "1,250+",
-      label: language === "no" ? "Tonn CO₂ spart" : "Tonnes CO₂ saved",
+      value: "100+",
+      label: language === "no" ? "Nettsider & apper" : "Websites & apps",
     },
     {
       value: "5,000+",
@@ -76,6 +78,29 @@ export default function AboutPage() {
     {
       value: "98%",
       label: language === "no" ? "Kundetilfredshet" : "Customer satisfaction",
+    },
+  ];
+
+  const services = [
+    {
+      icon: Globe,
+      title: language === "no" ? "Webutvikling" : "Web Development",
+      description: language === "no" ? "Profesjonelle nettsider" : "Professional websites",
+    },
+    {
+      icon: Smartphone,
+      title: language === "no" ? "App-utvikling" : "App Development",
+      description: language === "no" ? "iOS & Android apper" : "iOS & Android apps",
+    },
+    {
+      icon: Shield,
+      title: language === "no" ? "IT-tjenester" : "IT Services",
+      description: language === "no" ? "Managed IT & support" : "Managed IT & support",
+    },
+    {
+      icon: Recycle,
+      title: language === "no" ? "Bærekraft" : "Sustainability",
+      description: language === "no" ? "Refurbished IT-utstyr" : "Refurbished IT equipment",
     },
   ];
 
@@ -109,20 +134,20 @@ export default function AboutPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-600 via-green-700 to-emerald-800 text-white py-20">
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="bg-white/20 text-white mb-4">
+          <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white mb-4 border-0">
             {language === "no" ? "Om oss" : "About Us"}
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             {language === "no"
-              ? "Bærekraftig IT for fremtiden"
-              : "Sustainable IT for the Future"}
+              ? "Din partner for digitale løsninger"
+              : "Your Partner for Digital Solutions"}
           </h1>
-          <p className="text-xl text-green-100 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             {language === "no"
-              ? "Nornex AS er Norges ledende leverandør av refurbished IT-utstyr. Vi kombinerer teknologi og bærekraft for å skape verdi for kunder og miljø."
-              : "Nornex AS is Norway's leading supplier of refurbished IT equipment. We combine technology and sustainability to create value for customers and the environment."}
+              ? "Nornex AS leverer profesjonelle digitale tjenester – fra webutvikling og mobilapper til komplett IT-infrastruktur og bærekraftige IT-løsninger."
+              : "Nornex AS delivers professional digital services – from web development and mobile apps to complete IT infrastructure and sustainable IT solutions."}
           </p>
         </div>
       </section>
@@ -134,7 +159,7 @@ export default function AboutPage() {
             {stats.map((stat, index) => (
               <Card key={index} className="text-center">
                 <CardContent className="py-6">
-                  <p className="text-3xl font-bold text-green-600 mb-1">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent mb-1">
                     {stat.value}
                   </p>
                   <p className="text-sm text-gray-500">{stat.label}</p>
@@ -145,61 +170,90 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Section */}
+      {/* What We Do Section */}
       <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              {language === "no" ? "Hva vi gjør" : "What We Do"}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              {language === "no"
+                ? "Vi tilbyr et bredt spekter av digitale tjenester for bedrifter i alle størrelser."
+                : "We offer a wide range of digital services for businesses of all sizes."}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            {services.map((service, index) => (
+              <Card key={index} className="text-center hover:shadow-lg transition-all">
+                <CardContent className="py-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <service.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">{service.title}</h3>
+                  <p className="text-gray-500 text-sm">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Section */}
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Target className="w-6 h-6 text-green-600" />
-                <span className="text-green-600 font-semibold">
+                <Target className="w-6 h-6 text-emerald-500" />
+                <span className="text-emerald-500 font-semibold">
                   {language === "no" ? "Vår misjon" : "Our Mission"}
                 </span>
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {language === "no"
-                  ? "Gi IT-utstyr nytt liv"
-                  : "Give IT Equipment New Life"}
+                  ? "Digitale løsninger som driver resultater"
+                  : "Digital Solutions That Drive Results"}
               </h2>
               <p className="text-gray-600 mb-4">
                 {language === "no"
-                  ? "Vår misjon er å forlenge levetiden til IT-utstyr gjennom profesjonell refurbishing, og dermed bidra til en mer bærekraftig fremtid. Vi tror på at kvalitetsteknologi ikke trenger å være nytt for å være verdifullt."
-                  : "Our mission is to extend the life of IT equipment through professional refurbishing, thereby contributing to a more sustainable future. We believe that quality technology doesn't need to be new to be valuable."}
+                  ? "Vår misjon er å hjelpe bedrifter med å lykkes digitalt. Vi bygger profesjonelle nettsider, mobilapper og IT-løsninger som gir reelle resultater."
+                  : "Our mission is to help businesses succeed digitally. We build professional websites, mobile apps and IT solutions that deliver real results."}
               </p>
               <p className="text-gray-600 mb-6">
                 {language === "no"
-                  ? "For hver enhet vi refurbisher, sparer vi betydelige mengder CO₂ og reduserer mengden e-avfall som ender på deponi. Dette gjør vi samtidig som vi leverer høykvalitetsprodukter til konkurransedyktige priser."
-                  : "For every device we refurbish, we save significant amounts of CO₂ and reduce the amount of e-waste that ends up in landfills. We do this while delivering high-quality products at competitive prices."}
+                  ? "I tillegg fokuserer vi på bærekraft ved å gi IT-utstyr nytt liv gjennom profesjonell refurbishing, og dermed bidra til en mer bærekraftig fremtid."
+                  : "In addition, we focus on sustainability by giving IT equipment new life through professional refurbishing, thereby contributing to a more sustainable future."}
               </p>
-              <Link href="/miljo">
-                <Button>
-                  {language === "no" ? "Les om vårt miljøarbeid" : "Read about our environmental work"}
+              <Link href="/tjenester">
+                <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white border-0">
+                  {language === "no" ? "Se våre tjenester" : "View Our Services"}
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             </div>
-            <div className="bg-green-100 rounded-2xl p-8">
+            <div className="bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl p-8">
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg p-6 text-center">
-                  <Recycle className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+                  <Globe className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="font-semibold text-gray-900">
-                    {language === "no" ? "Sirkulær økonomi" : "Circular Economy"}
+                    {language === "no" ? "Web & Apps" : "Web & Apps"}
                   </p>
                 </div>
-                <div className="bg-white rounded-lg p-6 text-center">
-                  <Leaf className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+                  <Leaf className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="font-semibold text-gray-900">
-                    {language === "no" ? "CO₂-reduksjon" : "CO₂ Reduction"}
+                    {language === "no" ? "Bærekraft" : "Sustainability"}
                   </p>
                 </div>
-                <div className="bg-white rounded-lg p-6 text-center">
-                  <Shield className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+                  <Shield className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="font-semibold text-gray-900">
-                    {language === "no" ? "Datasikkerhet" : "Data Security"}
+                    {language === "no" ? "IT-sikkerhet" : "IT Security"}
                   </p>
                 </div>
-                <div className="bg-white rounded-lg p-6 text-center">
-                  <Award className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                <div className="bg-white rounded-lg p-6 text-center shadow-sm">
+                  <Award className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="font-semibold text-gray-900">
                     {language === "no" ? "Sertifisert" : "Certified"}
                   </p>
@@ -211,7 +265,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             {language === "no" ? "Våre verdier" : "Our Values"}
@@ -220,8 +274,8 @@ export default function AboutPage() {
             {values.map((value, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                 <CardContent className="py-8">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <value.icon className="w-8 h-8 text-green-600" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <value.icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {value.title}
@@ -235,27 +289,27 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">
             {language === "no" ? "Vårt team" : "Our Team"}
           </h2>
           <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
             {language === "no"
-              ? "Et dedikert team med ekspertise innen IT, bærekraft og kundeservice."
-              : "A dedicated team with expertise in IT, sustainability and customer service."}
+              ? "Et dedikert team med ekspertise innen webutvikling, app-utvikling, IT og kundeservice."
+              : "A dedicated team with expertise in web development, app development, IT and customer service."}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {team.map((member, index) => (
               <Card key={index} className="text-center">
                 <CardContent className="py-8">
-                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-10 h-10 text-gray-400" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-slate-200 to-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-10 h-10 text-slate-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">
                     {member.name}
                   </h3>
-                  <p className="text-green-600 text-sm font-medium mb-2">
+                  <p className="text-emerald-500 text-sm font-medium mb-2">
                     {member.role}
                   </p>
                   <p className="text-gray-600 text-sm">{member.description}</p>
@@ -267,7 +321,7 @@ export default function AboutPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="kontakt" className="py-16 bg-white">
+      <section id="kontakt" className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             {language === "no" ? "Kontakt oss" : "Contact Us"}
@@ -275,8 +329,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <Card className="text-center">
               <CardContent className="py-8">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   {language === "no" ? "Besøksadresse" : "Address"}
@@ -289,15 +343,15 @@ export default function AboutPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="py-8">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Phone className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Phone className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   {language === "no" ? "Telefon" : "Phone"}
                 </h3>
                 <a
                   href="tel:+4712345678"
-                  className="text-green-600 hover:text-green-700 transition-colors"
+                  className="text-emerald-500 hover:text-emerald-600 transition-colors"
                 >
                   +47 123 45 678
                 </a>
@@ -305,15 +359,15 @@ export default function AboutPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="py-8">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   {language === "no" ? "E-post" : "Email"}
                 </h3>
                 <a
                   href="mailto:post@nornex.no"
-                  className="text-green-600 hover:text-green-700 transition-colors"
+                  className="text-emerald-500 hover:text-emerald-600 transition-colors"
                 >
                   post@nornex.no
                 </a>

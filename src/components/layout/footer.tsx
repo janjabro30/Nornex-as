@@ -104,24 +104,44 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <span className="text-gray-400 text-sm">
-                  {language === "no" ? "IT-utstyr salg" : "IT Equipment Sales"}
-                </span>
+                <Link
+                  href="/tjenester"
+                  className="text-gray-400 hover:text-green-500 transition-colors text-sm"
+                >
+                  {language === "no" ? "Webutvikling" : "Web Development"}
+                </Link>
               </li>
               <li>
-                <span className="text-gray-400 text-sm">
-                  {language === "no" ? "Enhetsinnkjøp" : "Device Buyback"}
-                </span>
+                <Link
+                  href="/tjenester"
+                  className="text-gray-400 hover:text-green-500 transition-colors text-sm"
+                >
+                  {language === "no" ? "App-utvikling" : "App Development"}
+                </Link>
               </li>
               <li>
-                <span className="text-gray-400 text-sm">
-                  {language === "no" ? "Datasletting" : "Data Destruction"}
-                </span>
+                <Link
+                  href="/tjenester"
+                  className="text-gray-400 hover:text-green-500 transition-colors text-sm"
+                >
+                  {language === "no" ? "IT-tjenester" : "IT Services"}
+                </Link>
               </li>
               <li>
-                <span className="text-gray-400 text-sm">
-                  {language === "no" ? "E-avfall resirkulering" : "E-Waste Recycling"}
-                </span>
+                <Link
+                  href="/reparasjon"
+                  className="text-gray-400 hover:text-green-500 transition-colors text-sm"
+                >
+                  {language === "no" ? "Reparasjon" : "Repair"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/nettbutikk"
+                  className="text-gray-400 hover:text-green-500 transition-colors text-sm"
+                >
+                  {language === "no" ? "IT-utstyr" : "IT Equipment"}
+                </Link>
               </li>
             </ul>
           </div>
