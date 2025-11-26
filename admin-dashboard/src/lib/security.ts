@@ -9,7 +9,13 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { SECURITY_CONFIG } from './constants';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'nornex-secure-secret-key-change-in-production';
+function getJWTSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  return secret;
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SECURITY_CONFIG.bcryptRounds);
@@ -20,12 +26,12 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(payload: object): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: SECURITY_CONFIG.jwtExpiry });
+  return jwt.sign(payload, getJWTSecret(), { expiresIn: SECURITY_CONFIG.jwtExpiry });
 }
 
 export function verifyToken(token: string): jwt.JwtPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    return jwt.verify(token, getJWTSecret()) as jwt.JwtPayload;
   } catch {
     return null;
   }
@@ -36,8 +42,12 @@ export function generateCSRFToken(): string {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     crypto.getRandomValues(array);
   } else {
-    for (let i = 0; i < array.length; i++) {
-      array[i] = Math.floor(Math.random() * 256);
+    // Server-side fallback using Node.js crypto
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const nodeCrypto = require('crypto');
+    const bytes = nodeCrypto.randomBytes(SECURITY_CONFIG.csrfTokenLength);
+    for (let i = 0; i < SECURITY_CONFIG.csrfTokenLength; i++) {
+      array[i] = bytes[i];
     }
   }
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
@@ -99,8 +109,12 @@ export function generateSecureId(length = 16): string {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     crypto.getRandomValues(values);
   } else {
+    // Server-side fallback using Node.js crypto
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const nodeCrypto = require('crypto');
+    const bytes = nodeCrypto.randomBytes(length * 4);
     for (let i = 0; i < length; i++) {
-      values[i] = Math.floor(Math.random() * 4294967296);
+      values[i] = bytes.readUInt32LE(i * 4);
     }
   }
   for (let i = 0; i < length; i++) {
